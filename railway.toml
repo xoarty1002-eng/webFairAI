@@ -1,0 +1,9 @@
+[build]
+builder = "railpack"
+# Override the automatic build step to target the actual backend project
+buildCommand = "dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o out"
+
+[deploy]
+# Instruct the container to start the correct compiled binary artifact
+startCommand = "ASPNETCORE_URLS=http://0.0.0.0:${PORT:-3000} ./out/FairAI.Api"
+restartPolicyType = "on-failure"
