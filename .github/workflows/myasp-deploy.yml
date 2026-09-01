@@ -1,50 +1,62 @@
-name: Deploy to myasp.net via Railpack
+name: Deploy to myasp.net
 
 on:
   push:
     branches:
       - main
-      - xoarty1002-001
   workflow_dispatch:
 
 jobs:
-  validate-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Check required secret
-        run: |
-          if [ -z "${{ secrets.MYASP_DEPLOY_HOOK_URL }}" ]; then
-            echo "MYASP_DEPLOY_HOOK_URL is not configured."
-            echo "Add the Deploy Hook URL from your myasp.net panel to GitHub repository secrets."
-            exit 1
-          fi
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
-      - name: Checkout source
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.x"
 
-      - name: Restore backend
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Restore backend dependencies
         run: dotnet restore
 
       - name: Build backend
         run: dotnet build --configuration Release --no-restore
 
-      - name: Test backend
-        run: dotnet test --configuration Release --no-build
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --nologo
+
+      - name: Install frontend dependencies
+        run: npm install --prefix frontend
 
       - name: Build frontend
-        run: |
-          npm install --prefix frontend
-          npm run build --prefix frontend
+        run: npm run build --prefix frontend
 
-      - name: Trigger Railpack deployment
+      - name: Publish API
+        run: dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o ./publish
+
+      - name: Trigger myasp.net deployment
+        if: ${{ secrets.MYASP_DEPLOY_HOOK_URL != '' }}
         env:
           DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
         run: |
-          echo "Sending deployment request to myasp.net..."
           curl --fail --silent --show-error --location \
-            -X POST "$DEPLOY_HOOK_URL"
+            --request POST "$DEPLOY_HOOK_URL"
+
+      - name: Skip deployment (missing secret)
+        if: ${{ secrets.MYASP_DEPLOY_HOOK_URL == '' }}
+        run: |
+          echo "MYASP_DEPLOY_HOOK_URL is missing."
+          echo "Set it in GitHub: Settings -> Secrets and variables -> Actions"
