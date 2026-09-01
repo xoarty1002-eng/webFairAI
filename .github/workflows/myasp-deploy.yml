@@ -39,10 +39,12 @@ jobs:
         run: dotnet test --configuration Release --no-build --nologo
 
       - name: Install frontend dependencies
-        run: npm install --prefix frontend
+        working-directory: frontend
+        run: npm install
 
       - name: Build frontend
-        run: npm run build --prefix frontend
+        working-directory: frontend
+        run: npm run build
 
       - name: Publish API
         run: dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o ./publish

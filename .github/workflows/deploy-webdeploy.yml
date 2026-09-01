@@ -57,7 +57,7 @@ jobs:
         run: dotnet test --configuration Release --no-build
 
       - name: Install frontend dependencies
-        run: npm install --prefix frontend
+        run: npm install --prefix ./frontend
 
       - name: Build frontend
         run: npm run build --prefix frontend
@@ -68,8 +68,8 @@ jobs:
       - name: Copy frontend to wwwroot
         shell: bash
         run: |
-          mkdir -p ./release/wwwroot
-          cp -r ./frontend/out/* ./release/wwwroot/ 2>/dev/null || true
+          New-Item -ItemType Directory -Force -Path "./release/wwwroot" -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Force -Path "./frontend/out/*" -Destination "./release/wwwroot/" -ErrorAction SilentlyContinue
 
       - name: Deploy application
         shell: powershell
