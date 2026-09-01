@@ -71,7 +71,7 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapGet("/", () => Results.Ok(new { name = "FairAI API", status = "online" }));
+app.MapGet("api/status", () => new { name = "FairAI API", status = "online" });
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
 
 app.MapGet("/api/chat/sessions", async (FairAiDbContext db) =>
