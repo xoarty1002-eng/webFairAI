@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FairAI.Api/FairAI.Api.csproj" />
+  <Project Path="FairAI.Tests/FairAI.Tests.csproj" />
+</Solution>

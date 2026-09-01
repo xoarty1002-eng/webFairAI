@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fairai-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fairai
+      MYSQL_USER: fairai
+      MYSQL_PASSWORD: fairai
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - fairai_mysql_data:/var/lib/mysql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: fairai-api
+    ports:
+      - "5124:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Server=mysql;Port=3306;Database=fairai;User=fairai;Password=fairai;
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fairai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5124
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  fairai_mysql_data:

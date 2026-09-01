@@ -1,0 +1,20 @@
+name: Deploy to myasp.net
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger myasp.net deploy hook
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "MYASP_DEPLOY_HOOK_URL secret is not configured."
+            exit 1
+          fi
+          curl -fsSL -X POST "$DEPLOY_HOOK_URL"

@@ -1,0 +1,101 @@
+using FairAI.Api.Data;
+using FairAI.Api.Models;
+using FairAI.Api.Services;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=localhost;Database=fairai;User=fairai;Password=fairai;";
+
+builder.Services.AddDbContext<FairAiDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), mySqlOptions =>
+    {
+        mySqlOptions.EnableRetryOnFailure();
+    }));
+
+builder.Services.AddScoped<FairAIChatEngine>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.SetIsOriginAllowed(origin => true);
+    });
+});
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FairAiDbContext>();
+    db.Database.Migrate();
+    db.Database.EnsureCreated();
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseCors("FrontendPolicy");
+app.UseHttpsRedirection();
+
+app.MapGet("/", () => Results.Ok(new { name = "FairAI API", status = "online" }));
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
+
+app.MapGet("/api/chat/sessions", async (FairAiDbContext db) =>
+    Results.Ok(await db.ChatSessions
+        .OrderByDescending(s => s.CreatedAt)
+        .Select(s => new
+        {
+            s.Id,
+            s.Title,
+            s.CreatedAt,
+            MessageCount = s.Messages.Count
+        })
+        .ToListAsync()));
+
+app.MapGet("/api/chat/history", async (int sessionId, FairAiDbContext db) =>
+{
+    var messages = await db.ChatMessages
+        .Where(m => m.SessionId == sessionId)
+        .OrderBy(m => m.CreatedAt)
+        .Select(m => new ChatHistoryItem
+        {
+            SessionId = m.SessionId,
+            Role = m.Role,
+            Content = m.Content,
+            CreatedAt = m.CreatedAt
+        })
+        .ToListAsync();
+
+    return Results.Ok(messages);
+});
+
+app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Message))
+    {
+        return Results.BadRequest(new { error = "Message is required." });
+    }
+
+    var response = engine.Process(request.Message);
+    var session = await db.ChatSessions
+        .Include(s => s.Messages)
+        .FirstOrDefaultAsync(s => s.Id == response.SessionId);
+
+    return Results.Ok(new
+    {
+        sessionId = response.SessionId,
+        prompt = response.Prompt,
+        message = response.Message,
+        depthValue = response.DepthValue,
+        historyValue = response.HistoryValue,
+        sessionTitle = session?.Title
+    });
+});
+
+app.Run();
