@@ -70,9 +70,11 @@ jobs:
       - name: Copy frontend to wwwroot
         shell: bash
         run: |
-          New-Item -ItemType Directory -Force -Path "./release/wwwroot" -ErrorAction SilentlyContinue
-          Copy-Item -Recurse -Force -Path "./frontend/out/*" -Destination "./release/wwwroot/" -ErrorAction SilentlyContinue
-
+          # Create the directory if it doesn't exist (-p prevents throwing errors if it exists)
+          mkdir -p ./release/wwwroot
+          
+          # Copy everything from the Next.js out folder to your API release wwwroot
+          cp -r ./frontend/out/* ./release/wwwroot/
       - name: Deploy application
         shell: powershell
         run: |
