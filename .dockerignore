@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/out/
+**/node_modules/
+**/.next/
+.git
+.github
+.vscode
+.env
+.env.*
+!.env.example
+**/.DS_Store
