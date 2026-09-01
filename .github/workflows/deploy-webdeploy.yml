@@ -10,8 +10,36 @@ on:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      ASPNETCORE_ENVIRONMENT: Production
 
     steps:
+      - name: Validate required secrets
+        shell: powershell
+        run: |
+          $required = @(
+            'WEBSITE_NAME',
+            'SERVER_COMPUTER_NAME',
+            'SERVER_USERNAME',
+            'SERVER_PASSWORD'
+          )
+
+          foreach ($name in $required) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ([string]::IsNullOrWhiteSpace($value)) {
+              throw "Missing required GitHub repository secret: $name. Add it under Settings -> Secrets and variables -> Actions."
+            }
+          }
+
+          Write-Host "Deployment secrets validated."
+        env:
+          WEBSITE_NAME: ${{ secrets.WEBSITE_NAME }}
+          SERVER_COMPUTER_NAME: ${{ secrets.SERVER_COMPUTER_NAME }}
+          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+
       - name: Checkout source code
         uses: actions/checkout@v4
 
@@ -43,11 +71,11 @@ jobs:
           $password = "${{ secrets.SERVER_PASSWORD }}"
 
           if (-not (Test-Path $msdeploy)) {
-            throw "msdeploy.exe was not found at $msdeploy"
+            throw "msdeploy.exe was not found at $msdeploy. Install Web Deploy on the runner or use a supported hosting/deploy path."
           }
 
           if ([string]::IsNullOrWhiteSpace($siteName) -or [string]::IsNullOrWhiteSpace($computer) -or [string]::IsNullOrWhiteSpace($user) -or [string]::IsNullOrWhiteSpace($password)) {
-            throw "One or more required deployment secrets are not configured: WEBSITE_NAME, SERVER_COMPUTER_NAME, SERVER_USERNAME, SERVER_PASSWORD"
+            throw "One or more required deployment secrets are missing: WEBSITE_NAME, SERVER_COMPUTER_NAME, SERVER_USERNAME, SERVER_PASSWORD. Update the repository secrets in GitHub."
           }
 
           & $msdeploy `
@@ -57,3 +85,14 @@ jobs:
             -allowUntrusted `
             -enableRule:AppOffline `
             -enableRule:DoNotDeleteRule
+
+      - name: Deployment summary
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "Repository secret checklist:"
+          Write-Host "- WEBSITE_NAME"
+          Write-Host "- SERVER_COMPUTER_NAME"
+          Write-Host "- SERVER_USERNAME"
+          Write-Host "- SERVER_PASSWORD"
+          Write-Host "If any value is blank, add it at Settings -> Secrets and variables -> Actions."
