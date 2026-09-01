@@ -67,6 +67,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors("FrontendPolicy");
 app.UseHttpsRedirection();
 
+// Serve static files from wwwroot (frontend build output)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapGet("/", () => Results.Ok(new { name = "FairAI API", status = "online" }));
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
 

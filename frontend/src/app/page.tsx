@@ -24,10 +24,10 @@ export default function Home() {
     if (!trimmed || loading) return;
 
     const apiBaseUrl =
-      process.env.NEXT_PUBLIC_API_URL ??
+      process.env.NEXT_PUBLIC_API_URL ||
       (typeof window !== 'undefined' && window.location.hostname.endsWith('.app.github.dev'))
         ? `https://${window.location.hostname.replace('-3000.', '-5124.')}`
-        : 'http://localhost:5124';
+        : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5124');
 
     setMessages((current) => [...current, { role: 'user', content: trimmed }]);
     setInput('');

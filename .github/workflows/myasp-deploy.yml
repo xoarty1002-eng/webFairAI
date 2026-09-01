@@ -47,6 +47,11 @@ jobs:
       - name: Publish API
         run: dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o ./publish
 
+      - name: Copy frontend to wwwroot
+        run: |
+          mkdir -p ./publish/wwwroot
+          cp -r ./frontend/out/* ./publish/wwwroot/ 2>/dev/null || true
+
       - name: Trigger myasp.net deployment
         if: ${{ secrets.MYASP_DEPLOY_HOOK_URL != '' }}
         env:
