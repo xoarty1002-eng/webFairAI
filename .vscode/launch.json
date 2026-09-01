@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FairAI.Api",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/FairAI.Api/FairAI.Api.csproj",
+      "launchSettingsProfile": "https",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on:.*(https?://\\S+)"
+      }
+    },
+    {
+      "name": "FairAI Frontend",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "cd ${workspaceFolder}/frontend && npm run dev -- --hostname 0.0.0.0 --port 3000"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "FairAI Full Stack",
+      "configurations": [
+        "FairAI.Api",
+        "FairAI Frontend"
+      ]
+    }
+  ]
+}
