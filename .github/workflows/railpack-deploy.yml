@@ -1,0 +1,28 @@
+name: Railpack deployment trigger
+
+on:
+  push:
+    branches:
+      - main
+      - xoarty1002-001
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate deployment secret
+        run: |
+          if [ -z "${{ secrets.MYASP_DEPLOY_HOOK_URL }}" ]; then
+            echo "MYASP_DEPLOY_HOOK_URL is missing."
+            echo "Set it in GitHub: Settings -> Secrets and variables -> Actions"
+            exit 1
+          fi
+
+      - name: Trigger myasp.net deploy hook
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Calling myasp.net deploy hook for Railpack build..."
+          curl --fail --silent --show-error --location \
+            --request POST "$DEPLOY_HOOK_URL"
