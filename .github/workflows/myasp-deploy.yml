@@ -9,8 +9,15 @@
 - name: Build and Publish
   run: dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o ./publish
 
-- name: Deploy to Target Branch
-  uses: JamesIves/github-pages-deploy-action@v4
-  with:
-    folder: ./publish
-    branch: xoarty1002-001 # Matches your hosting sync requirement
+- name: Trigger myasp.net Deployment
+  if: secrets.MYASP_DEPLOY_HOOK_URL != ''
+  run: |
+    curl -X POST "${{ secrets.MYASP_DEPLOY_HOOK_URL }}" \
+      -H "Content-Type: application/json" \
+      -d '{"ref":"${{ github.ref }}"}'
+  
+- name: Skip Deployment (Missing Secret)
+  if: secrets.MYASP_DEPLOY_HOOK_URL == ''
+  run: |
+    echo "⚠️  MYASP_DEPLOY_HOOK_URL secret is not configured."
+    echo "To enable deployment to myasp.net, add the deploy hook URL as a repository secret."
