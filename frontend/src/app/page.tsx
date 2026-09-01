@@ -23,18 +23,12 @@ export default function Home() {
     const trimmed = input.trim();
     if (!trimmed || loading) return;
 
-    const apiBaseUrl =
-      process.env.NEXT_PUBLIC_API_URL ??
-      (typeof window !== 'undefined' && window.location.hostname.endsWith('.app.github.dev'))
-        ? `https://${window.location.hostname.replace('-3000.', '-5124.')}`
-        : 'http://localhost:5124';
-
     setMessages((current) => [...current, { role: 'user', content: trimmed }]);
     setInput('');
     setLoading(true);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/chat`, {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: trimmed }),

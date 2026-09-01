@@ -1,14 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-COPY ["FairAI.Api/FairAI.Api.csproj", "FairAI.Api/"]
-RUN dotnet restore "FairAI.Api/FairAI.Api.csproj"
-COPY . .
-WORKDIR "/src/FairAI.Api"
-RUN dotnet publish "FairAI.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+# Must be executed from the repository ROOT context
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 WORKDIR /app
-COPY --from=build /app/publish .
+
+# Copy solution and restore projects using correct subdirectory paths
+COPY webFairAI.slnx ./
+COPY FairAI.Api/FairAI.Api.csproj ./FairAI.Api/
+COPY FairAI.Tests/FairAI.Tests.csproj ./FairAI.Tests/
+RUN dotnet restore FairAI.Api/FairAI.Api.csproj
+
+# Copy the rest of the backend files
+COPY FairAI.Api/ ./FairAI.Api/
+RUN dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o out
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build-env /app/out .
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENTRYPOINT ["dotnet", "FairAI.Api.dll"]
