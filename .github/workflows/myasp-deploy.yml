@@ -1,50 +1,16 @@
-name: Deploy to myasp.net via Railpack
+- name: Setup .NET
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 9.0.x
 
-on:
-  push:
-    branches:
-      - main
-      - xoarty1002-001
-  workflow_dispatch:
+- name: Restore dependencies
+  run: dotnet restore webFairAI.slnx
 
-jobs:
-  validate-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check required secret
-        run: |
-          if [ -z "${{ secrets.MYASP_DEPLOY_HOOK_URL }}" ]; then
-            echo "MYASP_DEPLOY_HOOK_URL is not configured."
-            echo "Add the Deploy Hook URL from your myasp.net panel to GitHub repository secrets."
-            exit 1
-          fi
+- name: Build and Publish
+  run: dotnet publish FairAI.Api/FairAI.Api.csproj -c Release -o ./publish
 
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.x"
-
-      - name: Restore backend
-        run: dotnet restore
-
-      - name: Build backend
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test backend
-        run: dotnet test --configuration Release --no-build
-
-      - name: Build frontend
-        run: |
-          npm install --prefix frontend
-          npm run build --prefix frontend
-
-      - name: Trigger Railpack deployment
-        env:
-          DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
-        run: |
-          echo "Sending deployment request to myasp.net..."
-          curl --fail --silent --show-error --location \
-            -X POST "$DEPLOY_HOOK_URL"
+- name: Deploy to Target Branch
+  uses: JamesIves/github-pages-deploy-action@v4
+  with:
+    folder: ./publish
+    branch: xoarty1002-001 # Matches your hosting sync requirement
