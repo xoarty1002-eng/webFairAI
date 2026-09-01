@@ -1,0 +1,34 @@
+name: .NET Build Check
+
+on:
+  push:
+    branches:
+      - main
+      - xoarty1002-001
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --nologo
+
+      - name: Build frontend
+        run: |
+          npm install --prefix frontend
+          npm run build --prefix frontend
