@@ -125,5 +125,5 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
         sessionTitle = session?.Title
     });
 });
-
+app.MapFallbackToFile("index.html"); 
 app.Run();
