@@ -7,14 +7,23 @@ on:
 
 jobs:
   deploy:
+    if: ${{ secrets.MYASP_DEPLOY_HOOK_URL != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger myasp.net deploy hook
         env:
           DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
         run: |
-          if [ -z "$DEPLOY_HOOK_URL" ]; then
-            echo "MYASP_DEPLOY_HOOK_URL secret is not configured."
-            exit 1
-          fi
-          curl -fsSL -X POST "$DEPLOY_HOOK_URL"
+          echo "Sending deployment request to myasp.net..."
+          curl --fail --silent --show-error --location \
+            -X POST "$DEPLOY_HOOK_URL"
+
+  missing-secret:
+    if: ${{ secrets.MYASP_DEPLOY_HOOK_URL == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify secret is missing
+        run: |
+          echo "MYASP_DEPLOY_HOOK_URL is not configured."
+          echo "Add the Deploy Hook URL from your myasp.net panel to GitHub repository secrets."
+          echo "Then push to main or rerun the workflow."

@@ -6,13 +6,30 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=localhost;Database=fairai;User=fairai;Password=fairai;";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Server=localhost;Port=3306;Database=fairai;User=fairai;Password=fairai;";
 
-builder.Services.AddDbContext<FairAiDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), mySqlOptions =>
+builder.Services.AddDbContext<FairAiDbContext>((serviceProvider, options) =>
+{
+    if (!string.IsNullOrWhiteSpace(connectionString))
     {
-        mySqlOptions.EnableRetryOnFailure();
-    }));
+        try
+        {
+            var detectedVersion = ServerVersion.AutoDetect(connectionString);
+            options.UseMySql(connectionString, detectedVersion, mySqlOptions =>
+            {
+                mySqlOptions.EnableRetryOnFailure();
+            });
+            return;
+        }
+        catch
+        {
+            options.UseInMemoryDatabase("FairAI-Local-Fallback");
+            return;
+        }
+    }
+
+    options.UseInMemoryDatabase("FairAI-Local-Fallback");
+});
 
 builder.Services.AddScoped<FairAIChatEngine>();
 
@@ -31,8 +48,15 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FairAiDbContext>();
-    db.Database.Migrate();
-    db.Database.EnsureCreated();
+
+    if (db.Database.IsRelational())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 if (app.Environment.IsDevelopment())

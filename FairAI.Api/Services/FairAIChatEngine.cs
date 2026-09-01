@@ -1,7 +1,6 @@
 using FairAI.Api.Data;
 using FairAI.Api.Domain;
 using FairAI.Api.Models;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairAI.Api.Services;
@@ -23,11 +22,8 @@ public class FairAIChatEngine
 
     private static FairAiDbContext CreateDefaultDbContext()
     {
-        var connection = new SqliteConnection("Data Source=:memory:");
-        connection.Open();
-
         var options = new DbContextOptionsBuilder<FairAiDbContext>()
-            .UseSqlite(connection)
+            .UseInMemoryDatabase($"FairAI-{Guid.NewGuid()}")
             .Options;
 
         var db = new FairAiDbContext(options);
