@@ -1,0 +1,58 @@
+name: Build and Deploy ASP.NET Core
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build
+
+      - name: Publish application
+        run: dotnet publish --configuration Release --no-build --output ./release
+
+      - name: Deploy application
+        shell: powershell
+        run: |
+          $msdeploy = "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe"
+
+          $siteName = "${{ secrets.WEBSITE_NAME }}"
+          $computer = "${{ secrets.SERVER_COMPUTER_NAME }}"
+          $user = "${{ secrets.SERVER_USERNAME }}"
+          $password = "${{ secrets.SERVER_PASSWORD }}"
+
+          if (-not (Test-Path $msdeploy)) {
+            throw "msdeploy.exe was not found at $msdeploy"
+          }
+
+          if ([string]::IsNullOrWhiteSpace($siteName) -or [string]::IsNullOrWhiteSpace($computer) -or [string]::IsNullOrWhiteSpace($user) -or [string]::IsNullOrWhiteSpace($password)) {
+            throw "One or more required deployment secrets are not configured: WEBSITE_NAME, SERVER_COMPUTER_NAME, SERVER_USERNAME, SERVER_PASSWORD"
+          }
+
+          & $msdeploy `
+            -verb:sync `
+            -source:contentPath="$(Get-Location)\release" `
+            -dest:contentPath="$siteName",ComputerName="$computer",UserName="$user",Password="$password",AuthType="Basic" `
+            -allowUntrusted `
+            -enableRule:AppOffline `
+            -enableRule:DoNotDeleteRule
