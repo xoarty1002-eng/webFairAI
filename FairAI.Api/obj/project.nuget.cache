@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "sneAKDgodrE=",
+  "dgSpecHash": "kkS1Oe9jyJ0=",
   "success": true,
   "projectFilePath": "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj",
   "expectedPackageFiles": [
@@ -20,7 +20,6 @@
     "/home/codespace/.nuget/packages/microsoft.entityframeworkcore.design/9.0.0/microsoft.entityframeworkcore.design.9.0.0.nupkg.sha512",
     "/home/codespace/.nuget/packages/microsoft.entityframeworkcore.inmemory/9.0.0/microsoft.entityframeworkcore.inmemory.9.0.0.nupkg.sha512",
     "/home/codespace/.nuget/packages/microsoft.entityframeworkcore.relational/9.0.0/microsoft.entityframeworkcore.relational.9.0.0.nupkg.sha512",
-    "/home/codespace/.nuget/packages/microsoft.entityframeworkcore.tools/9.0.0/microsoft.entityframeworkcore.tools.9.0.0.nupkg.sha512",
     "/home/codespace/.nuget/packages/microsoft.extensions.dependencymodel/9.0.0/microsoft.extensions.dependencymodel.9.0.0.nupkg.sha512",
     "/home/codespace/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
     "/home/codespace/.nuget/packages/mysqlconnector/2.4.0/mysqlconnector.2.4.0.nupkg.sha512",

@@ -1,29 +1,50 @@
-name: Deploy to myasp.net
+name: Deploy to myasp.net via Railpack
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - xoarty1002-001
   workflow_dispatch:
 
 jobs:
-  deploy:
-    if: ${{ secrets.MYASP_DEPLOY_HOOK_URL != '' }}
+  validate-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger myasp.net deploy hook
+      - name: Check required secret
+        run: |
+          if [ -z "${{ secrets.MYASP_DEPLOY_HOOK_URL }}" ]; then
+            echo "MYASP_DEPLOY_HOOK_URL is not configured."
+            echo "Add the Deploy Hook URL from your myasp.net panel to GitHub repository secrets."
+            exit 1
+          fi
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.x"
+
+      - name: Restore backend
+        run: dotnet restore
+
+      - name: Build backend
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test backend
+        run: dotnet test --configuration Release --no-build
+
+      - name: Build frontend
+        run: |
+          npm install --prefix frontend
+          npm run build --prefix frontend
+
+      - name: Trigger Railpack deployment
         env:
           DEPLOY_HOOK_URL: ${{ secrets.MYASP_DEPLOY_HOOK_URL }}
         run: |
           echo "Sending deployment request to myasp.net..."
           curl --fail --silent --show-error --location \
             -X POST "$DEPLOY_HOOK_URL"
-
-  missing-secret:
-    if: ${{ secrets.MYASP_DEPLOY_HOOK_URL == '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify secret is missing
-        run: |
-          echo "MYASP_DEPLOY_HOOK_URL is not configured."
-          echo "Add the Deploy Hook URL from your myasp.net panel to GitHub repository secrets."
-          echo "Then push to main or rerun the workflow."
