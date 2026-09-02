@@ -64,53 +64,43 @@ public class LanguagePool
         return result;
     }
 
-    public string Generate(StateModel state)
+    public string Generate(StateModel dm)
     {
-        if (Data.Count == 0) return string.Empty;
-
-        double targetFirst = state.HistoryValue;
-        double targetSecond = state.DepthValue;
-        var generated = new List<string>();
-        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var toggle = true;
-
-        while (generated.Count < Data.Count)
+        var disp = 2.0;
+        var dmX = dm.HistoryValue;
+        var dmY = dm.DepthValue;
+        var str = "";
+        DataModel closestObject;
+        var flag = true;
+        while (true)
         {
-            DataModel? candidate = null;
-
-            if (toggle)
+            if (flag)
             {
-                candidate = Data
-                    .Where(d => !visited.Contains(d.Word))
-                    .OrderBy(d => Math.Abs(d.HistoryValue - targetFirst))
-                    .FirstOrDefault();
-
-                if (candidate is null) break;
-
-                var delta = targetFirst - candidate.HistoryValue;
-                targetSecond += delta;
+                closestObject = Data.MinBy(x =>
+                    Math.Abs(x.HistoryValue - dmX)
+            );
             }
             else
             {
-                candidate = Data
-                    .Where(d => !visited.Contains(d.Word))
-                    .OrderBy(d => Math.Abs(d.DepthValue - targetSecond))
-                    .FirstOrDefault();
-
-                if (candidate is null) break;
-
-                var delta = targetSecond - candidate.DepthValue;
-                targetFirst += delta;
+                closestObject = Data.MinBy(x =>
+                Math.Abs(x.DepthValue - dmY)
+            );
             }
-
-            if (candidate is null) break;
-
-            visited.Add(candidate.Word);
-            generated.Add(candidate.Word);
-            toggle = !toggle;
+            dmX = (closestObject.DepthValue + dmX) / 2;
+            dmY = (closestObject.DepthValue + dmY) / 2;
+            flag = !flag;
+            var pre = (Math.Abs(dmX - dm.DepthValue) + Math.Abs(dmY - dm.HistoryValue));
+            if (pre < disp)
+            {
+                disp = pre;
+                str += closestObject.Word + " ";
+            }
+            else
+            {
+                break;
+            }
         }
-
-        return string.Join(" ", generated).Trim();
+        return str;
     }
 }
 
