@@ -5,7 +5,6 @@ FairAI is a full-stack AI governance and fairness chat application built with AS
 ## Preview
 https://xoarty1002-001-site1.ctempurl.com/
 
-
 ## Stack
 - ASP.NET Core Web API
 - Entity Framework Core with MySQL support and in-memory fallback for local development
