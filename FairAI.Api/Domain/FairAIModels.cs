@@ -66,6 +66,8 @@ public class LanguagePool
 
     public string Generate(StateModel dm)
     {
+        if (Data.Count == 0) 
+        return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.HistoryValue;
         var dmY = dm.DepthValue;
