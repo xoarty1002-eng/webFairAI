@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from 'react';
 import styles from './page.module.css';
-
 type ChatMessage = {
   role: string;
   content: string;
@@ -62,7 +61,15 @@ export default function Home() {
         <header className={styles.header}>
           <div>
             <p className={styles.eyebrow}>Governance AI</p>
-            <h1>FairAI Chat</h1>
+            <h1>  
+              <img
+                src="/logo.png"
+                alt="FairAI Platform Logo"
+                width={36}
+                height={36}
+                style={{ borderRadius: '8px', objectFit: 'cover' }}
+              />
+              FairAI Chat</h1>
           </div>
           <span className={styles.status}>Live</span>
         </header>

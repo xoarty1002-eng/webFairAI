@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FairAI Chat",
   description: "FairAI governance and fairness chat interface",
+   icons: {
+    icon: "/logo.png", // Sets the web browser tab shortcut favicon icon
+    apple: "/logo.png", // Provides standard display compatibility for mobile web wrappers
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
