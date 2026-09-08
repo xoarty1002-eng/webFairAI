@@ -1,0 +1,33 @@
+## Core .NET Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio & IDE Cache
+.vs/
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Frontend (Next.js & Node)
+**/node_modules/
+**/dist/
+**/.next/
+**/out/
+.env.local
+.env.*.local
+
+## OS-specific files
+.DS_Store
+Thumbs.db
