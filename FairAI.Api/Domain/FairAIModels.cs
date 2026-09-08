@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using FairAI.Api.Data;
 
 namespace FairAI.Api.Domain;
 
 public class StateModel
 {
+    [Key]
+    public int Id { get; set; }
     public double DepthValue { get; set; }
     public double HistoryValue { get; set; }
 }
@@ -20,11 +23,15 @@ public class NodeModel : StateModel
 
 public class NeuronModel
 {
+    [Key]
+    public int Id { get; set; }
     public double Value { get; set; }
 }
 
 public class CoreModel
 {
+    [Key]
+    public int Id { get; set; }
     public double Range { get; set; }
     public double Speed { get; set; }
     public double Position { get; set; }
@@ -45,7 +52,7 @@ public class LanguagePool
         if (_context.DataSet.ToList().Any(d => string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
 
         var random = Random.Shared;
-        _context.DataSet.ToList().Add(new DataModel
+        _context.DataSet.Add(new DataModel
         {
             Word = word,
             DepthValue = random.NextDouble(),
@@ -74,7 +81,7 @@ public class LanguagePool
 
     public string Generate(StateModel dm)
     {
-        if (_context.DataSet.ToList().Count == 0) 
+        if (!_context.DataSet.Any()) 
         return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.HistoryValue;
@@ -121,11 +128,11 @@ public class DepthPool
     public DepthPool(int length, FairAiDbContext context)
     {
         _context = context;
-        if(_context.NeuronSet.ToList().Count == 0)
+        if(!_context.NeuronSet.Any())
         {
             for (var i = 0; i < length; i++)
             {
-                _context.NeuronSet.ToList().Add(new NeuronModel { Value = Random.Shared.NextDouble() });
+                _context.NeuronSet.Add(new NeuronModel { Value = Random.Shared.NextDouble() });
             }
             _context.SaveChanges();
        }
@@ -171,8 +178,16 @@ public class DepthPool
             if (node.HistoryValue < replacement) { replacement = node.HistoryValue; replacementIndex = i + 2; }
         }
 
-        _context.NeuronSet.ToList()[replacementIndex].Value = replacement;
-        _context.SaveChanges();
+        var targetNeuron = _context.NeuronSet
+            .OrderBy(n => n.Id) // Databases require an explicit ordering to safely pick an index
+            .Skip(replacementIndex)
+           .FirstOrDefault();
+
+        if (targetNeuron != null)
+        {
+            targetNeuron.Value = replacement;
+            _context.SaveChanges();
+        }
         return node;
     }
 
@@ -204,11 +219,11 @@ public class CoreDepth
     public CoreDepth(int count, FairAiDbContext context)
     {
         _context = context;
-        if(_context.CoreSet.ToList().Count == 0)
+        if(!_context.CoreSet.Any())
         {
             for (var i = 0; i < count; i++)
             {
-                _context.CoreSet.ToList().Add(new CoreModel
+                _context.CoreSet.Add(new CoreModel
                 {
                     Range = i,
                     Speed = Random.Shared.NextDouble(),
@@ -260,7 +275,7 @@ public class CoreDepth
 
     public void Drive(int time)
     {
-        foreach (var core in _context.CoreSet.ToList())
+        foreach (var core in _context.CoreSet)
         {
             core.Position = (core.Speed * time) % 1.0;
         }
