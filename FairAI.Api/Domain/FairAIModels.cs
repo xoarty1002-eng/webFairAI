@@ -1,3 +1,5 @@
+using FairAI.Api.Data;
+
 namespace FairAI.Api.Domain;
 
 public class StateModel
@@ -30,21 +32,27 @@ public class CoreModel
 
 public class LanguagePool
 {
-    public List<DataModel> Data { get; set; } = new();
+    private readonly FairAiDbContext _context;
+    public LanguagePool(FairAiDbContext context)
+    {
+        _context = context;
+    }
 
     public void Add(string word)
     {
         if (string.IsNullOrWhiteSpace(word)) return;
 
-        if (Data.Any(d => string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
+        if (_context.DataSet.ToList().Any(d => string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
 
         var random = Random.Shared;
-        Data.Add(new DataModel
+        _context.DataSet.ToList().Add(new DataModel
         {
             Word = word,
             DepthValue = random.NextDouble(),
             HistoryValue = random.NextDouble()
         });
+        _context.SaveChanges();
+
     }
 
     public StateModel Calculate(string request)
@@ -55,7 +63,7 @@ public class LanguagePool
         foreach (var element in dataArray)
         {
             Add(element);
-            var match = Data.FirstOrDefault(d => string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
+            var match = _context.DataSet.ToList().FirstOrDefault(d => string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
             if (match is null) continue;
             result.DepthValue = (result.DepthValue + match.DepthValue) / 2;
             result.HistoryValue = (result.HistoryValue + match.HistoryValue) / 2;
@@ -66,7 +74,7 @@ public class LanguagePool
 
     public string Generate(StateModel dm)
     {
-        if (Data.Count == 0) 
+        if (_context.DataSet.ToList().Count == 0) 
         return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.HistoryValue;
@@ -78,13 +86,13 @@ public class LanguagePool
         {
             if (flag)
             {
-                closestObject = Data.MinBy(x =>
+                closestObject = _context.DataSet.ToList().MinBy(x =>
                     Math.Abs(x.HistoryValue - dmX)
             );
             }
             else
             {
-                closestObject = Data.MinBy(x =>
+                closestObject = _context.DataSet.ToList().MinBy(x =>
                 Math.Abs(x.DepthValue - dmY)
             );
             }
@@ -108,15 +116,19 @@ public class LanguagePool
 
 public class DepthPool
 {
-    public List<NeuronModel> Pool { get; set; }
+    private readonly FairAiDbContext _context;
 
-    public DepthPool(int length)
+    public DepthPool(int length, FairAiDbContext context)
     {
-        Pool = new List<NeuronModel>();
-        for (var i = 0; i < length; i++)
+        _context = context;
+        if(_context.NeuronSet.ToList().Count == 0)
         {
-            Pool.Add(new NeuronModel { Value = Random.Shared.NextDouble() });
-        }
+            for (var i = 0; i < length; i++)
+            {
+                _context.NeuronSet.ToList().Add(new NeuronModel { Value = Random.Shared.NextDouble() });
+            }
+            _context.SaveChanges();
+       }
     }
 
     public NodeModel Down(StateModel request)
@@ -124,32 +136,32 @@ public class DepthPool
         var replacement = 1.0;
         var replacementIndex = 0;
 
-        request.DepthValue = (Pool[0].Value + request.DepthValue) / 2;
+        request.DepthValue = (_context.NeuronSet.ToList()[0].Value + request.DepthValue) / 2;
         if (request.DepthValue < replacement) { replacement = request.DepthValue; replacementIndex = 0; }
 
-        request.HistoryValue = (Pool[1].Value + request.HistoryValue) / 2;
+        request.HistoryValue = (_context.NeuronSet.ToList()[1].Value + request.HistoryValue) / 2;
         if (request.HistoryValue < replacement) { replacement = request.HistoryValue; replacementIndex = 1; }
 
         var node = new NodeModel
         {
-            DepthValue = (Pool[2].Value + request.DepthValue) / 2,
-            MiddleValue = (Pool[3].Value + (request.HistoryValue + request.DepthValue) / 2) / 2,
-            HistoryValue = (Pool[4].Value + request.HistoryValue) / 2
+            DepthValue = (_context.NeuronSet.ToList()[2].Value + request.DepthValue) / 2,
+            MiddleValue = (_context.NeuronSet.ToList()[3].Value + (request.HistoryValue + request.DepthValue) / 2) / 2,
+            HistoryValue = (_context.NeuronSet.ToList()[4].Value + request.HistoryValue) / 2
         };
 
         if (node.DepthValue < replacement) { replacement = node.DepthValue; replacementIndex = 2; }
         if (node.MiddleValue < replacement) { replacement = node.MiddleValue; replacementIndex = 3; }
         if (node.HistoryValue < replacement) { replacement = node.HistoryValue; replacementIndex = 4; }
 
-        for (var i = 5; i + 2 < Pool.Count; i += 3)
+        for (var i = 5; i + 2 < _context.NeuronSet.ToList().Count; i += 3)
         {
             var priorDepth = node.DepthValue;
             var priorMiddle = node.MiddleValue;
             var priorHistory = node.HistoryValue;
 
-            node.DepthValue = (Pool[i].Value + node.DepthValue) / 2;
-            node.MiddleValue = (Pool[i + 1].Value + node.MiddleValue) / 2;
-            node.HistoryValue = (Pool[i + 2].Value + node.HistoryValue) / 2;
+            node.DepthValue = (_context.NeuronSet.ToList()[i].Value + node.DepthValue) / 2;
+            node.MiddleValue = (_context.NeuronSet.ToList()[i + 1].Value + node.MiddleValue) / 2;
+            node.HistoryValue = (_context.NeuronSet.ToList()[i + 2].Value + node.HistoryValue) / 2;
             node.DepthValue = (node.DepthValue + priorMiddle) / 2;
             node.MiddleValue = (node.MiddleValue + priorHistory) / 2;
             node.HistoryValue = (node.HistoryValue + priorDepth) / 2;
@@ -159,48 +171,52 @@ public class DepthPool
             if (node.HistoryValue < replacement) { replacement = node.HistoryValue; replacementIndex = i + 2; }
         }
 
-        Pool[replacementIndex].Value = replacement;
+        _context.NeuronSet.ToList()[replacementIndex].Value = replacement;
+        _context.SaveChanges();
         return node;
     }
 
     public StateModel Up(NodeModel request)
     {
-        for (var i = Pool.Count - 3; i > 1; i -= 3)
+        for (var i = _context.NeuronSet.ToList().Count - 3; i > 1; i -= 3)
         {
             var priorDepth = request.DepthValue;
             var priorMiddle = request.MiddleValue;
             var priorHistory = request.HistoryValue;
 
-            request.DepthValue = (Pool[i].Value + request.DepthValue) / 2;
-            request.MiddleValue = (Pool[i + 1].Value + request.MiddleValue) / 2;
-            request.HistoryValue = (Pool[i + 2].Value + request.HistoryValue) / 2;
+            request.DepthValue = (_context.NeuronSet.ToList()[i].Value + request.DepthValue) / 2;
+            request.MiddleValue = (_context.NeuronSet.ToList()[i + 1].Value + request.MiddleValue) / 2;
+            request.HistoryValue = (_context.NeuronSet.ToList()[i + 2].Value + request.HistoryValue) / 2;
             request.DepthValue = (request.DepthValue + priorMiddle) / 2;
             request.MiddleValue = (request.MiddleValue + priorHistory) / 2;
             request.HistoryValue = (request.HistoryValue + priorDepth) / 2;
         }
 
-        request.DepthValue = (Pool[0].Value + (request.DepthValue + request.MiddleValue) / 2) / 2;
-        request.HistoryValue = (Pool[1].Value + (request.HistoryValue + request.MiddleValue) / 2) / 2;
+        request.DepthValue = (_context.NeuronSet.ToList()[0].Value + (request.DepthValue + request.MiddleValue) / 2) / 2;
+        request.HistoryValue = (_context.NeuronSet.ToList()[1].Value + (request.HistoryValue + request.MiddleValue) / 2) / 2;
         return request;
     }
 }
 
 public class CoreDepth
 {
-    public List<CoreModel> Cores { get; set; }
-
-    public CoreDepth(int count)
+    private readonly FairAiDbContext _context;
+    public CoreDepth(int count, FairAiDbContext context)
     {
-        Cores = new List<CoreModel>();
-        for (var i = 0; i < count; i++)
+        _context = context;
+        if(_context.CoreSet.ToList().Count == 0)
         {
-            Cores.Add(new CoreModel
+            for (var i = 0; i < count; i++)
             {
-                Range = i,
-                Speed = Random.Shared.NextDouble(),
-                Position = Random.Shared.NextDouble()
-            });
-        }
+                _context.CoreSet.ToList().Add(new CoreModel
+                {
+                    Range = i,
+                    Speed = Random.Shared.NextDouble(),
+                    Position = Random.Shared.NextDouble()
+                });
+            }
+        _context.SaveChanges();
+       }
     }
 
     public NodeModel Check(NodeModel request)
@@ -211,15 +227,15 @@ public class CoreDepth
         while (true)
         {
             Drive(time);
-            for (var i = 0; i < Cores.Count; i++)
+            for (var i = 0; i < _context.CoreSet.ToList().Count; i++)
             {
-                for (var j = i + 1; j < Cores.Count; j++)
+                for (var j = i + 1; j < _context.CoreSet.ToList().Count; j++)
                 {
-                    for (var k = j + 1; k < Cores.Count; k++)
+                    for (var k = j + 1; k < _context.CoreSet.ToList().Count; k++)
                     {
-                        var pos1 = Cores[i].Position;
-                        var pos2 = Cores[j].Position;
-                        var pos3 = Cores[k].Position;
+                        var pos1 = _context.CoreSet.ToList()[i].Position;
+                        var pos2 = _context.CoreSet.ToList()[j].Position;
+                        var pos3 = _context.CoreSet.ToList()[k].Position;
                         var axis1 = pos1 >= 0.5 ? pos1 - 0.5 : pos1;
                         var axis2 = pos2 >= 0.5 ? pos2 - 0.5 : pos2;
                         var axis3 = pos3 >= 0.5 ? pos3 - 0.5 : pos3;
@@ -229,9 +245,9 @@ public class CoreDepth
 
                         if (d12 <= normalizedTolerance && d23 <= normalizedTolerance && d13 <= normalizedTolerance)
                         {
-                            request.DepthValue = Cores[i].Speed;
-                            request.HistoryValue = Cores[j].Speed;
-                            request.MiddleValue = Cores[k].Speed;
+                            request.DepthValue = _context.CoreSet.ToList()[i].Speed;
+                            request.HistoryValue = _context.CoreSet.ToList()[j].Speed;
+                            request.MiddleValue = _context.CoreSet.ToList()[k].Speed;
                             return request;
                         }
                     }
@@ -244,9 +260,10 @@ public class CoreDepth
 
     public void Drive(int time)
     {
-        foreach (var core in Cores)
+        foreach (var core in _context.CoreSet.ToList())
         {
             core.Position = (core.Speed * time) % 1.0;
         }
+        _context.SaveChanges();
     }
 }

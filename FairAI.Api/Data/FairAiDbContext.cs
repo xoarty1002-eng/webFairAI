@@ -1,3 +1,4 @@
+using FairAI.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace FairAI.Api.Data;
@@ -8,6 +9,9 @@ public class FairAiDbContext : DbContext
     {
     }
 
+    public DbSet<DataModel> DataSet => Set<DataModel>();
+    public DbSet<NeuronModel> NeuronSet => Set<NeuronModel>();
+    public DbSet<CoreModel> CoreSet => Set<CoreModel>();
     public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<LanguageEntry> LanguageEntries => Set<LanguageEntry>();

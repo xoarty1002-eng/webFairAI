@@ -80,20 +80,10 @@ public class FairAIChatEngine
             state.HistoryValue = (state.HistoryValue + entry.HistoryValue) / 2;
         }
 
-        var languagePool = new LanguagePool();
-        foreach (var entry in _db.LanguageEntries.AsNoTracking().ToList())
-        {
-            languagePool.Data.Add(new DataModel
-            {
-                Word = entry.Word,
-                DepthValue = entry.DepthValue,
-                HistoryValue = entry.HistoryValue
-            });
-        }
-
-        var depthPool = new DepthPool(32);
+        var languagePool = new LanguagePool(_db);
+        var depthPool = new DepthPool(32, _db);
         var node = depthPool.Down(state);
-        var coreDepth = new CoreDepth(8);
+        var coreDepth = new CoreDepth(8, _db);
         var verifiedNode = coreDepth.Check(node);
         var processedState = depthPool.Up(verifiedNode);
 
@@ -144,28 +134,7 @@ public class FairAIChatEngine
             CreatedAt = DateTime.UtcNow
         });
 
-        foreach (var neuron in depthPool.Pool)
-        {
-            _db.NeuronRecords.Add(new NeuronRecord
-            {
-                Session = session,
-                Value = neuron.Value,
-                CreatedAt = DateTime.UtcNow
-            });
-        }
-
-        foreach (var core in coreDepth.Cores)
-        {
-            _db.CoreRecords.Add(new CoreRecord
-            {
-                Session = session,
-                Range = (int)core.Range,
-                Speed = core.Speed,
-                Position = core.Position,
-                CreatedAt = DateTime.UtcNow
-            });
-        }
-
+ 
         _db.SaveChanges();
 
         return new ChatResponse
