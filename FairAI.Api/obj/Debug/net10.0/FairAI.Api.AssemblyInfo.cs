@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FairAI.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d72c3440f8e80c9cb9e976ad983ed726bcbf7f3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c557dbfd201fde4e86c454221fd7925bc121227d")]
 [assembly: System.Reflection.AssemblyProductAttribute("FairAI.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FairAI.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
