@@ -52,37 +52,13 @@ public class FairAIChatEngine
 
         _db.ChatSessions.Add(session);
 
-        var state = new StateModel();
+         
         var words = normalizedPrompt
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-        foreach (var word in words)
-        {
-            var entry = _db.LanguageEntries.FirstOrDefault(x => x.Word == word);
-            if (entry is null)
-            {
-                entry = new LanguageEntry
-                {
-                    Word = word,
-                    DepthValue = Random.Shared.NextDouble(),
-                    HistoryValue = Random.Shared.NextDouble(),
-                    UsageCount = 1,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _db.LanguageEntries.Add(entry);
-            }
-            else
-            {
-                entry.UsageCount += 1;
-            }
-
-            state.DepthValue = (state.DepthValue + entry.DepthValue) / 2;
-            state.HistoryValue = (state.HistoryValue + entry.HistoryValue) / 2;
-        }
-
         var languagePool = new LanguagePool(_db);
         var depthPool = new DepthPool(32, _db);
-        var node = depthPool.Down(state);
+        var state = languagePool.Calculate(normalizedPrompt);
+       var node = depthPool.Down(state);
         var coreDepth = new CoreDepth(8, _db);
         var verifiedNode = coreDepth.Check(node);
         var processedState = depthPool.Up(verifiedNode);
