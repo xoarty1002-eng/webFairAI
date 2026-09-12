@@ -279,6 +279,5 @@ public class CoreDepth
         {
             core.Position = (core.Speed * time) % 1.0;
         }
-        _context.SaveChanges();
     }
 }
