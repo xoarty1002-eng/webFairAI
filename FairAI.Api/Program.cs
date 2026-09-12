@@ -128,7 +128,15 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     }
     catch (Exception ex)
     {
-        return Results.Problem(detail: ex.ToString(), statusCode: 500);
+        return Results.Ok(new
+    {
+        sessionId = 0,
+        prompt = "response.Prompt",
+        message = "response.Message",
+        depthValue = 0.0,
+        historyValue = 0.0,
+        sessionTitle = ex.Message
+    });    
     }
 
 });
