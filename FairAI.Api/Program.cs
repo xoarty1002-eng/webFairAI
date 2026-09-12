@@ -131,11 +131,11 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
         return Results.Ok(new
     {
         sessionId = 0,
-        prompt = "response.Prompt",
-        message = "response.Message",
+        prompt = "",
+        message = ex.Message,
         depthValue = 0.0,
         historyValue = 0.0,
-        sessionTitle = ex.Message
+        sessionTitle = ""
     });    
     }
 
