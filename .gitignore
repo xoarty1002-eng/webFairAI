@@ -4,6 +4,7 @@
 **/bin/
 **/obj/
 **/release/
+**/debug/
 
 # ==========================================
 # 2. Block specific compiled extension patterns
