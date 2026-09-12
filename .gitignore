@@ -1,46 +1,22 @@
-# 1. Block build artifacts and binaries
-bin/
-obj/
-release/
+# ==========================================
+# 1. Block build artifacts and binaries (Globbed)
+# ==========================================
+**/bin/
+**/obj/
+**/release/
 
-# 2. Block specific compiled extensions leaking in your snapshot
+# ==========================================
+# 2. Block specific compiled extension patterns
+# ==========================================
 *.dll
 *.pdb
 *.exe
 *.cache
+*.json
 
+# ==========================================
 # 3. Block IDE / Roslyn diagnostics caches
+# ==========================================
 .vs/
 .idea/
 *.user
-FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/bin/Debug/net10.0/FairAI.Api.pdb
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfo.cs
-FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.pdb
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfoInputs.cache
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
-FairAI.Tests/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfoInputs.cache
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.dll
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.pdb
-FairAI.Api/obj/Debug/net10.0/FairAI.Api.sourcelink.json
-FairAI.Api/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
-FairAI.Api/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
-FairAI.Api/obj/Debug/net10.0/ref/FairAI.Api.dll
-FairAI.Api/obj/Debug/net10.0/refint/FairAI.Api.dll
-FairAI.Tests/bin/Debug/net10.0/FairAI.Api.dll
-FairAI.Tests/bin/Debug/net10.0/FairAI.Api.pdb
-FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.dll
-FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.pdb
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.AssemblyInfo.cs
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.AssemblyInfoInputs.cache
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.csproj.AssemblyReference.cache
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.dll
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.pdb
-FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.sourcelink.json
-FairAI.Tests/obj/Debug/net10.0/ref/FairAI.Tests.dll
-FairAI.Tests/obj/Debug/net10.0/refint/FairAI.Tests.dll
