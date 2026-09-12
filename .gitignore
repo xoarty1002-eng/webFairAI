@@ -1,174 +1,46 @@
-# =========================
-# .NET / ASP.NET Core
-# =========================
-[Bb]in/
-[Oo]bj/
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Ll]og/
-[Ll]ogs/
-artifacts/
-.artifacts/
-*.user
-*.userosscache
-*.suo
-*.sln.docstates
-*.rsuser
-.vs/
-*.pdb
+# 1. Block build artifacts and binaries
+bin/
+obj/
+release/
+
+# 2. Block specific compiled extensions leaking in your snapshot
 *.dll
+*.pdb
 *.exe
 *.cache
-*.ilk
-*.meta
-*.obj
-*.iobj
-*.pch
-*.ipdb
-*.pgc
-*.pgd
-*.rsp
-!Directory.Build.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
-*.tmp
-*.tmp_proj
-*_wpftmp.csproj
-*.log
-*.tlog
-*.vspscc
-*.vssscc
-.builds
-*.pidb
-*.svclog
-*.scc
-project.lock.json
-project.fragment.lock.json
-*.nupkg
-*.snupkg
-**/[Pp]ackages/*
-!**/[Pp]ackages/build/
-*.nuget.props
-*.nuget.targets
-TestResult*
-[Tt]est[Rr]esult*/
-*.trx
-*.coverage
-*.coveragexml
-coverage*.json
-coverage*.xml
-coverage*.info
-BenchmarkDotNet.Artifacts/
-*.pubxml
-*.publishproj
-PublishScripts/
-*.azurePubxml
-*.publishsettings
-*.pfx
-*.dbmdl
-*.jfm
-MigrationBackup/
-.localhistory/
-.vshistory/
-*.binlog
-MSBuild_Logs/
 
-# =========================
-# Node / Next.js / Frontend
-# =========================
-node_modules/
-**/node_modules/
-.pnp
-.pnp.js
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-.pnpm-store
-.next/
-**/.next/
-out/
-**/out/
-dist/
-**/dist/
-build/
-.npm
-.eslintcache
-.stylelintcache
-*.tsbuildinfo
-.next/cache/
-.vercel
-.turbo
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-# Coverage
-coverage
-*.lcov
-.nyc_output
-
-# =========================
-# Environment & secrets
-# =========================
-.env
-.env.*
-!.env.example
-*.local
-appsettings.*.local.json
-# (Keep appsettings.json and appsettings.Development.json if they contain no secrets)
-
-# =========================
-# IDE / Editors
-# =========================
+# 3. Block IDE / Roslyn diagnostics caches
+.vs/
 .idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-*.code-workspace
-.history/
-*.swp
-*~
-
-# =========================
-# OS
-# =========================
-.DS_Store
-.AppleDouble
-.LSOverride
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.lnk
-
-# =========================
-# Docker / Misc
-# =========================
-docker-compose.override.yml
-*.tgz
-.cache
-.parcel-cache
-.sass-cache/
+*.user
+FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/bin/Debug/net10.0/FairAI.Api.pdb
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfo.cs
+FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.pdb
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfoInputs.cache
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
+FairAI.Tests/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.AssemblyInfoInputs.cache
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.dll
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.pdb
+FairAI.Api/obj/Debug/net10.0/FairAI.Api.sourcelink.json
+FairAI.Api/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
+FairAI.Api/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
+FairAI.Api/obj/Debug/net10.0/ref/FairAI.Api.dll
+FairAI.Api/obj/Debug/net10.0/refint/FairAI.Api.dll
+FairAI.Tests/bin/Debug/net10.0/FairAI.Api.dll
+FairAI.Tests/bin/Debug/net10.0/FairAI.Api.pdb
+FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.dll
+FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.pdb
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.AssemblyInfo.cs
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.AssemblyInfoInputs.cache
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.csproj.AssemblyReference.cache
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.dll
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.pdb
+FairAI.Tests/obj/Debug/net10.0/FairAI.Tests.sourcelink.json
+FairAI.Tests/obj/Debug/net10.0/ref/FairAI.Tests.dll
+FairAI.Tests/obj/Debug/net10.0/refint/FairAI.Tests.dll
