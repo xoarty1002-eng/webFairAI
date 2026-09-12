@@ -109,7 +109,8 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     {
         return Results.BadRequest(new { error = "Message is required." });
     }
-
+    try
+    {
     var response = engine.Process(request.Message);
     var session = await db.ChatSessions
         .Include(s => s.Messages)
@@ -123,7 +124,13 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
         depthValue = response.DepthValue,
         historyValue = response.HistoryValue,
         sessionTitle = session?.Title
-    });
+    });    
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(detail: ex.ToString(), statusCode: 500);
+    }
+
 });
 app.MapFallbackToFile("index.html"); 
 app.Run();
