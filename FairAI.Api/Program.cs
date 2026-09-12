@@ -23,12 +23,12 @@ builder.Services.AddDbContext<FairAiDbContext>((serviceProvider, options) =>
         }
         catch
         {
-//            options.UseInMemoryDatabase("FairAI-Local-Fallback");
+            options.UseInMemoryDatabase("FairAI-Local-Fallback");
             return;
         }
     }
 
-//    options.UseInMemoryDatabase("FairAI-Local-Fallback");
+    options.UseInMemoryDatabase("FairAI-Local-Fallback");
 });
 
 builder.Services.AddScoped<FairAIChatEngine>();
