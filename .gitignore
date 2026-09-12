@@ -24,3 +24,5 @@
 .idea/
 *.user
 FairAI.Api/bin/
+FairAI.Api/obj/
+
