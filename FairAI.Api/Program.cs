@@ -14,8 +14,8 @@ builder.Services.AddDbContext<FairAiDbContext>((serviceProvider, options) =>
     {
         try
         {
-            var detectedVersion = ServerVersion.AutoDetect(connectionString);
-            options.UseMySql(connectionString, detectedVersion, mySqlOptions =>
+             var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
+             options.UseMySql(connectionString, serverVersion, mySqlOptions =>
             {
                 mySqlOptions.EnableRetryOnFailure();
             });
