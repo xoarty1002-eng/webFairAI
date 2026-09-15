@@ -89,6 +89,7 @@ public class LanguagePool
         var str = "";
         DataModel closestObject;
         var flag = true;
+        var wordCount = 0;
         while (true)
         {
             if (flag)
@@ -111,10 +112,21 @@ public class LanguagePool
             {
                 disp = pre;
                 str += closestObject.Word + " ";
+                wordCount++;
             }
             else
             {
-                break;
+                if (wordCount == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    wordCount--;
+                    _context.DataSet.Remove(closestObject);
+                    _context.SaveChanges();
+                    Add(closestObject.Word);
+                }
             }
         }
         return str;

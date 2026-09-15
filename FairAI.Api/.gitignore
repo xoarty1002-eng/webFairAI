@@ -1,0 +1,28 @@
+# ==========================================
+# 1. Block build artifacts and binaries (Globbed)
+# ==========================================
+**/bin/
+**/obj/
+**/release/
+**/Release/
+**/debug/
+**/Debug/
+
+# ==========================================
+# 2. Block specific compiled extension patterns
+# ==========================================
+*.dll
+*.pdb
+*.exe
+*.cache
+*.json
+
+# ==========================================
+# 3. Block IDE / Roslyn diagnostics caches
+# ==========================================
+.vs/
+.idea/
+*.user
+FairAI.Api/bin/
+FairAI.Api/obj/
+
