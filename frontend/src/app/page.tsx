@@ -96,6 +96,9 @@ export default function Home() {
           </button>
         </form>
       </section>
+      <a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
+  <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments" />
+</a>
     </main>
   );
 }
