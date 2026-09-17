@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, ChangeEvent } from 'react';
 import styles from './page.module.css';
 type ChatMessage = {
   role: string;
@@ -16,7 +16,12 @@ export default function Home() {
       content: 'Hello! I am FairAI. Ask me about fairness, trust, or AI governance.',
     },
   ]);
+ const [username, setUsername] = useState<string>('');
 
+  // 2. Type the event as a ChangeEvent for an HTMLInputElement
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    setUsername(event.target.value);
+  };
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const trimmed = input.trim();
@@ -36,7 +41,7 @@ export default function Home() {
       const response = await fetch(`${apiBaseUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: trimmed }),
+        body: JSON.stringify({ message: trimmed, username: username }), // Include the username in the request body
       });
 
       if (!response.ok) {
@@ -95,9 +100,33 @@ export default function Home() {
             {loading ? 'Sending...' : 'Send'}
           </button>
         </form>
-       <a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
+<div style={{ display: 'flex', flexWrap: 'wrap'}}>
+  <div style={{backgroundColor: 'lightcoral' }}><a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
   <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments" />
-</a>
+</a></div>
+  <div style={{ backgroundColor: 'lightgreen' }}><a href="https://nowpayments.io/payment/?iid=4914149117&source=button" target="_blank" rel="noreferrer noopener">
+  <img src="https://nowpayments.io/images/embeds/payments-button-white.svg" alt="Cryptocurrency & Bitcoin payment button by NOWPayments" />
+</a></div>
+  <div>
+      <label htmlFor="username-input" style={{ fontWeight: 'bold', color: '#555'  }}>
+        Username:
+      </label>
+      
+      <input
+        id="username-input"
+        type="text"
+        value={username}
+        onChange={handleChange}
+        placeholder="Enter your username"
+        style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'black', color: 'white'}}
+      />
+      
+      <p style={{ fontSize: '14px', color: '#555' }}>
+        Current state: <strong>{username}</strong>
+      </p>
+    </div>
+</div>  
+
      </section>
     </main>
   );

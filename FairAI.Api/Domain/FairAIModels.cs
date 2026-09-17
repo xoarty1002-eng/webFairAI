@@ -14,6 +14,7 @@ public class StateModel
 public class DataModel : StateModel
 {
     public string Word { get; set; } = string.Empty;
+    public string? User { get; set; } = string.Empty;
 }
 
 public class NodeModel : StateModel
@@ -45,32 +46,33 @@ public class LanguagePool
         _context = context;
     }
 
-    public void Add(string word)
+    public void Add(string word, string? user)
     {
         if (string.IsNullOrWhiteSpace(word)) return;
 
-        if (_context.DataSet.ToList().Any(d => string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
+        if (_context.DataSet.ToList().Any(d => d.User == user && string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
 
         var random = Random.Shared;
         _context.DataSet.Add(new DataModel
         {
             Word = word,
             DepthValue = random.NextDouble(),
-            HistoryValue = random.NextDouble()
+            HistoryValue = random.NextDouble(),
+            User = user
         });
         _context.SaveChanges();
 
     }
 
-    public StateModel Calculate(string request)
+    public StateModel Calculate(string request, string? user)
     {
         var result = new StateModel();
         var dataArray = request.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         foreach (var element in dataArray)
         {
-            Add(element);
-            var match = _context.DataSet.ToList().FirstOrDefault(d => string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
+            Add(element, user);
+            var match = _context.DataSet.ToList().FirstOrDefault(d => d.User == user && string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
             if (match is null) continue;
             result.DepthValue = (result.DepthValue + match.DepthValue) / 2;
             result.HistoryValue = (result.HistoryValue + match.HistoryValue) / 2;
@@ -79,9 +81,9 @@ public class LanguagePool
         return result;
     }
 
-    public string Generate(StateModel dm)
+    public string Generate(StateModel dm, string? user)
     {
-        if (!_context.DataSet.Any()) 
+        if (! _context.DataSet.ToList().Where(d => d.User == user).ToList().Any()) 
         return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.HistoryValue;
@@ -94,13 +96,13 @@ public class LanguagePool
         {
             if (flag)
             {
-                closestObject = _context.DataSet.ToList().MinBy(x =>
+                closestObject =  _context.DataSet.ToList().Where(d => d.User == user).ToList().MinBy(x =>
                     Math.Abs(x.HistoryValue - dmX)
             );
             }
             else
             {
-                closestObject = _context.DataSet.ToList().MinBy(x =>
+                closestObject =  _context.DataSet.ToList().Where(d => d.User == user).ToList().MinBy(x =>
                 Math.Abs(x.DepthValue - dmY)
             );
             }
@@ -125,7 +127,7 @@ public class LanguagePool
                     wordCount--;
                     _context.DataSet.Remove(closestObject);
                     _context.SaveChanges();
-                    Add(closestObject.Word);
+                    Add(closestObject.Word, user);
                 }
             }
         }

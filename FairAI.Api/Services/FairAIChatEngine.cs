@@ -31,12 +31,12 @@ public class FairAIChatEngine
         return db;
     }
 
-    public string ProcessText(string prompt)
+    public string ProcessText(string prompt, string? user)
     {
-        return Process(prompt).Message;
+        return Process(prompt, user).Message;
     }
 
-    public ChatResponse Process(string prompt)
+    public ChatResponse Process(string prompt, string? user)
     {
         if (string.IsNullOrWhiteSpace(prompt))
         {
@@ -57,13 +57,13 @@ public class FairAIChatEngine
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var languagePool = new LanguagePool(_db);
         var depthPool = new DepthPool(32, _db);
-        var state = languagePool.Calculate(normalizedPrompt);
+        var state = languagePool.Calculate(normalizedPrompt, user);
        var node = depthPool.Down(state);
         var coreDepth = new CoreDepth(8, _db);
         var verifiedNode = coreDepth.Check(node);
         var processedState = depthPool.Up(verifiedNode);
 
-        var generatedText = languagePool.Generate(processedState);
+        var generatedText = languagePool.Generate(processedState, user);
         if (string.IsNullOrWhiteSpace(generatedText))
         {
             generatedText = "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";

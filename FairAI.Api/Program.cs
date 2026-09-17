@@ -111,7 +111,7 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     }
     try
     {
-    var response = engine.Process(request.Message);
+    var response = engine.Process(request.Message, request.UserName);
     var session = await db.ChatSessions
         .Include(s => s.Messages)
         .FirstOrDefaultAsync(s => s.Id == response.SessionId);
