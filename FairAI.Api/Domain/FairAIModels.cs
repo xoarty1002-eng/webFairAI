@@ -289,10 +289,9 @@ public class CoreDepth
 
     public void Drive(int time)
     {
-        long unixTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         foreach (var core in _context.CoreSet)
         {
-            core.Position = (core.Speed * time * (1/unixTimestamp)) % 1.0;
+            core.Position = (core.Speed * time) % 1.0;
         }
     }
 }
