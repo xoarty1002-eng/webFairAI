@@ -252,19 +252,21 @@ public class CoreDepth
     {
         const double normalizedTolerance = 0.0028;
         var time = 1;
-
+        var maxIterations = 200;
+        var cores = _context.CoreSet.ToList();
         while (true)
         {
+            maxIterations--;
             Drive(time);
-            for (var i = 0; i < _context.CoreSet.ToList().Count; i++)
+            for (var i = 0; i < cores.ToList().Count; i++)
             {
-                for (var j = i + 1; j < _context.CoreSet.ToList().Count; j++)
+                for (var j = i + 1; j < cores.ToList().Count; j++)
                 {
-                    for (var k = j + 1; k < _context.CoreSet.ToList().Count; k++)
+                    for (var k = j + 1; k < cores.ToList().Count; k++)
                     {
-                        var pos1 = _context.CoreSet.ToList()[i].Position;
-                        var pos2 = _context.CoreSet.ToList()[j].Position;
-                        var pos3 = _context.CoreSet.ToList()[k].Position;
+                        var pos1 = cores[i].Position;
+                        var pos2 = cores[j].Position;
+                        var pos3 = cores[k].Position;
                         var axis1 = pos1 >= 0.5 ? pos1 - 0.5 : pos1;
                         var axis2 = pos2 >= 0.5 ? pos2 - 0.5 : pos2;
                         var axis3 = pos3 >= 0.5 ? pos3 - 0.5 : pos3;
@@ -272,11 +274,11 @@ public class CoreDepth
                         var d23 = Math.Min(Math.Abs(axis2 - axis3), 0.5 - Math.Abs(axis2 - axis3));
                         var d13 = Math.Min(Math.Abs(axis1 - axis3), 0.5 - Math.Abs(axis1 - axis3));
 
-                        if (d12 <= normalizedTolerance && d23 <= normalizedTolerance && d13 <= normalizedTolerance)
+                        if (maxIterations <= 0 || d12 <= normalizedTolerance && d23 <= normalizedTolerance && d13 <= normalizedTolerance)
                         {
-                            request.DepthValue = _context.CoreSet.ToList()[i].Speed;
-                            request.HistoryValue = _context.CoreSet.ToList()[j].Speed;
-                            request.MiddleValue = _context.CoreSet.ToList()[k].Speed;
+                            request.DepthValue =cores[i].Speed;
+                            request.HistoryValue = cores[j].Speed;
+                            request.MiddleValue = cores[k].Speed;
                             return request;
                         }
                     }
