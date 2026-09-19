@@ -120,21 +120,17 @@ app.MapGet("/api/chat/history", async (int sessionId, FairAiDbContext db) =>
     return Results.Ok(messages);
 });
 
-app.MapPost("/api/vote", async (double x, double y, double z, string voteType, FairAIChatEngine engine, FairAiDbContext db) =>
+app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
 {
     try
     {
-        engine.Vote(x, y, z, voteType);
+        engine.Vote(request.X, request.Y, request.Z, request.VoteType);
         return Results.Ok();
     }
     catch (Exception ex)
     {
-        return Results.BadRequest(new
-        {
-            message = ex.Message,
-        });
+        return Results.BadRequest(new { message = ex.Message });
     }
-
 });
 app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
 {
@@ -178,3 +174,11 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
 });
 app.MapFallbackToFile("index.html"); 
 app.Run();
+
+public class VoteRequest
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Z { get; set; }
+    public string VoteType { get; set; }
+}

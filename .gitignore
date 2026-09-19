@@ -26,3 +26,8 @@
 FairAI.Api/bin/
 FairAI.Api/obj/
 
+/FairAI.Tests/bin/Debug/net10.0/FairAI.Api.dll
+/FairAI.Tests/bin/Debug/net10.0/FairAI.Api.pdb
+/FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.dll
+/FairAI.Tests/bin/Debug/net10.0/FairAI.Tests.pdb
+/FairAI.Tests/obj/Debug/net10.0/ref/FairAI.Tests.dll
