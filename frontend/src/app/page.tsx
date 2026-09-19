@@ -154,13 +154,13 @@ export default function Home() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px', gap: '15px' }}>
                     <div style={{ backgroundColor: 'lightcoral', padding: '5px', borderRadius: '4px' }}>
-                        <a href="https://nowpayments.io" target="_blank" rel="noreferrer noopener">
-                            <img src="https://nowpayments.io" alt="Crypto payment button by NOWPayments" />
+                        <a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
+                            <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments" />
                         </a>
                     </div>
                     <div style={{ backgroundColor: 'lightgreen', padding: '5px', borderRadius: '4px' }}>
-                        <a href="https://nowpayments.io" target="_blank" rel="noreferrer noopener">
-                            <img src="https://nowpayments.io" alt="Cryptocurrency & Bitcoin payment button by NOWPayments" />
+                        <a href="https://nowpayments.io/payment/?iid=4914149117&source=button" target="_blank" rel="noreferrer noopener">
+                            <img src="https://nowpayments.io/images/embeds/payments-button-white.svg" alt="Cryptocurrency & Bitcoin payment button by NOWPayments" />
                         </a>
                     </div>
                     <div>

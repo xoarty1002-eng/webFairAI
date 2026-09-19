@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FairAI.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7d26fe609df87e656d235225d8e6d2ac6e2c66f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af6798a09b579b016253cc60f0bd9edd2ae10b2e")]
 [assembly: System.Reflection.AssemblyProductAttribute("FairAI.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FairAI.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
