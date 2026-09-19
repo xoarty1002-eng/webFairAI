@@ -13,6 +13,9 @@ public class ChatResponse
     public string Message { get; set; } = string.Empty;
     public double DepthValue { get; set; }
     public double HistoryValue { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Z { get; set; }
 }
 
 public class ChatHistoryItem

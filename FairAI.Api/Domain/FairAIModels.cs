@@ -36,6 +36,7 @@ public class CoreModel
     public double Range { get; set; }
     public double Speed { get; set; }
     public double Position { get; set; }
+    public int VoteCount {  get; set; }
 }
 
 public class LanguagePool
@@ -241,11 +242,43 @@ public class CoreDepth
                 {
                     Range = i,
                     Speed = Random.Shared.NextDouble(),
-                    Position = Random.Shared.NextDouble()
+                    Position = Random.Shared.NextDouble(),
+                    VoteCount = 0
                 });
             }
         _context.SaveChanges();
        }
+    }
+    public void Vote(double X, double Y, double Z, string VoteType)
+    {
+        var count = 0;
+        if (VoteType == "up")
+        {
+            count = 1;
+        }
+        else
+        {
+            count = -1;
+        }
+        _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - X)).First().VoteCount += count;
+        if (_context.CoreSet.OrderBy(n => Math.Abs(n.Speed - X)).First().VoteCount < 0)
+        {
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - X)).First().Speed = Random.Shared.NextDouble();
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - X)).First().Position = Random.Shared.NextDouble();
+        }
+        _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Y)).First().VoteCount += count;
+        if (_context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Y)).First().VoteCount < 0)
+        {
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Y)).First().Speed = Random.Shared.NextDouble();
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Y)).First().Position = Random.Shared.NextDouble();
+        }
+        _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Z)).First().VoteCount += count;
+        if (_context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Z)).First().VoteCount < 0)
+        {
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Z)).First().Speed = Random.Shared.NextDouble();
+            _context.CoreSet.OrderBy(n => Math.Abs(n.Speed - Z)).First().Position = Random.Shared.NextDouble();
+        }
+        _context.SaveChanges();
     }
 
     public NodeModel Check(NodeModel request)

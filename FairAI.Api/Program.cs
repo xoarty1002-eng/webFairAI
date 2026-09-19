@@ -103,6 +103,22 @@ app.MapGet("/api/chat/history", async (int sessionId, FairAiDbContext db) =>
     return Results.Ok(messages);
 });
 
+app.MapPost("/api/vote", async (double x, double y, double z, string voteType, FairAIChatEngine engine, FairAiDbContext db) =>
+{
+    try
+    {
+        engine.Vote(x, y, z, voteType);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new
+        {
+            message = ex.Message,
+        });
+    }
+
+});
 app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Message))
@@ -111,32 +127,35 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     }
     try
     {
-    var response = engine.Process(request.Message, request.UserName);
-    var session = await db.ChatSessions
-        .Include(s => s.Messages)
-        .FirstOrDefaultAsync(s => s.Id == response.SessionId);
+        var response = engine.Process(request.Message, request.UserName);
+        var session = await db.ChatSessions
+            .Include(s => s.Messages)
+            .FirstOrDefaultAsync(s => s.Id == response.SessionId);
 
-    return Results.Ok(new
-    {
-        sessionId = response.SessionId,
-        prompt = response.Prompt,
-        message = response.Message,
-        depthValue = response.DepthValue,
-        historyValue = response.HistoryValue,
-        sessionTitle = session?.Title
-    });    
+        return Results.Ok(new
+        {
+            sessionId = response.SessionId,
+            prompt = response.Prompt,
+            message = response.Message,
+            depthValue = response.DepthValue,
+            historyValue = response.HistoryValue,
+            sessionTitle = session?.Title,
+            x = response.X,
+            y = response.Y,
+            z = response.Z
+        });
     }
     catch (Exception ex)
     {
         return Results.Ok(new
-    {
-        sessionId = 0,
-        prompt = "",
-        message = ex.Message,
-        depthValue = 0.0,
-        historyValue = 0.0,
-        sessionTitle = ""
-    });    
+        {
+            sessionId = 0,
+            prompt = "",
+            message = ex.Message,
+            depthValue = 0.0,
+            historyValue = 0.0,
+            sessionTitle = ""
+        });
     }
 
 });

@@ -1,29 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "/workspaces/webFairAI/FairAI.Tests/FairAI.Tests.csproj": {}
+    "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Tests\\FairAI.Tests.csproj": {}
   },
   "projects": {
-    "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj": {
+    "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\FairAI.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj",
+        "projectUniqueName": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\FairAI.Api.csproj",
         "projectName": "FairAI.Api",
-        "projectPath": "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj",
-        "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/webFairAI/FairAI.Api/obj/",
+        "projectPath": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\FairAI.Api.csproj",
+        "packagesPath": "C:\\Users\\xoart\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/codespace/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\xoart\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -38,17 +45,18 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "10.0.400"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[9.0.20, )"
             },
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
@@ -78,7 +86,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.200/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
@@ -496,30 +504,37 @@
         }
       }
     },
-    "/workspaces/webFairAI/FairAI.Tests/FairAI.Tests.csproj": {
+    "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Tests\\FairAI.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/webFairAI/FairAI.Tests/FairAI.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Tests\\FairAI.Tests.csproj",
         "projectName": "FairAI.Tests",
-        "projectPath": "/workspaces/webFairAI/FairAI.Tests/FairAI.Tests.csproj",
-        "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/webFairAI/FairAI.Tests/obj/",
+        "projectPath": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Tests\\FairAI.Tests.csproj",
+        "packagesPath": "C:\\Users\\xoart\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Tests\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/codespace/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\xoart\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj": {
-                "projectPath": "/workspaces/webFairAI/FairAI.Api/FairAI.Api.csproj"
+              "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\FairAI.Api.csproj": {
+                "projectPath": "C:\\Users\\xoart\\source\\repos\\ne\\webFairAI\\FairAI.Api\\FairAI.Api.csproj"
               }
             }
           }
@@ -534,10 +549,11 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "10.0.400"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
@@ -573,7 +589,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.200/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

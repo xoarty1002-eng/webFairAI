@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v10.0": {
       "FairAI.Api/1.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "9.0.0",
+          "Microsoft.EntityFrameworkCore.Design": "9.0.20",
           "Microsoft.EntityFrameworkCore.InMemory": "9.0.0",
           "Pomelo.EntityFrameworkCore.MySql": "9.0.0"
         },
@@ -308,46 +308,46 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore/9.0.0": {
+      "Microsoft.EntityFrameworkCore/9.0.20": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "9.0.0"
+          "Microsoft.EntityFrameworkCore.Abstractions": "9.0.20"
         },
         "runtime": {
           "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52902"
+            "assemblyVersion": "9.0.20.0",
+            "fileVersion": "9.0.2026.41306"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/9.0.0": {
+      "Microsoft.EntityFrameworkCore.Abstractions/9.0.20": {
         "runtime": {
           "lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52902"
+            "assemblyVersion": "9.0.20.0",
+            "fileVersion": "9.0.2026.41306"
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Design/9.0.0": {
+      "Microsoft.EntityFrameworkCore.Design/9.0.20": {
         "dependencies": {
           "Humanizer.Core": "2.14.1",
           "Microsoft.Build.Locator": "1.7.8",
           "Microsoft.CodeAnalysis.CSharp": "4.8.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.8.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "4.8.0",
-          "Microsoft.EntityFrameworkCore.Relational": "9.0.0",
-          "Microsoft.Extensions.DependencyModel": "9.0.0",
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.20",
+          "Microsoft.Extensions.DependencyModel": "9.0.20",
           "Mono.TextTemplating": "3.0.0"
         },
         "runtime": {
           "lib/net8.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52902"
+            "assemblyVersion": "9.0.20.0",
+            "fileVersion": "9.0.2026.41306"
           }
         }
       },
       "Microsoft.EntityFrameworkCore.InMemory/9.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "9.0.0"
+          "Microsoft.EntityFrameworkCore": "9.0.20"
         },
         "runtime": {
           "lib/net8.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
@@ -356,22 +356,22 @@
           }
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/9.0.0": {
+      "Microsoft.EntityFrameworkCore.Relational/9.0.20": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "9.0.0"
+          "Microsoft.EntityFrameworkCore": "9.0.20"
         },
         "runtime": {
           "lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52902"
+            "assemblyVersion": "9.0.20.0",
+            "fileVersion": "9.0.2026.41306"
           }
         }
       },
-      "Microsoft.Extensions.DependencyModel/9.0.0": {
+      "Microsoft.Extensions.DependencyModel/9.0.20": {
         "runtime": {
           "lib/net9.0/Microsoft.Extensions.DependencyModel.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.24.52809"
+            "assemblyVersion": "9.0.0.20",
+            "fileVersion": "9.0.2026.41315"
           }
         }
       },
@@ -396,7 +396,7 @@
       },
       "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "9.0.0",
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.20",
           "MySqlConnector": "2.4.0"
         },
         "runtime": {
@@ -538,26 +538,26 @@
       "path": "microsoft.codeanalysis.workspaces.msbuild/4.8.0",
       "hashPath": "microsoft.codeanalysis.workspaces.msbuild.4.8.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore/9.0.0": {
+    "Microsoft.EntityFrameworkCore/9.0.20": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wpG+nfnfDAw87R3ovAsUmjr3MZ4tYXf6bFqEPVAIKE6IfPml3DS//iX0DBnf8kWn5ZHSO5oi1m4d/Jf+1LifJQ==",
-      "path": "microsoft.entityframeworkcore/9.0.0",
-      "hashPath": "microsoft.entityframeworkcore.9.0.0.nupkg.sha512"
+      "sha512": "sha512-52/3+48fTVcVQopie1SZLLenAuyrG0Enr1eAEbw05b22dl6nbC8V0UHLFknodJOrVcqdYR1Pf6FMbNvvWuhB5A==",
+      "path": "microsoft.entityframeworkcore/9.0.20",
+      "hashPath": "microsoft.entityframeworkcore.9.0.20.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/9.0.0": {
+    "Microsoft.EntityFrameworkCore.Abstractions/9.0.20": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fnmifFL8KaA4ZNLCVgfjCWhZUFxkrDInx5hR4qG7Q8IEaSiy/6VOSRFyx55oH7MV4y7wM3J3EE90nSpcVBI44Q==",
-      "path": "microsoft.entityframeworkcore.abstractions/9.0.0",
-      "hashPath": "microsoft.entityframeworkcore.abstractions.9.0.0.nupkg.sha512"
+      "sha512": "sha512-ity/Y3MG2hAxK/na+9vp0XQ6kDDwZ8thJfCl+MSBhRNyXgaBtb16SyX2W0uFL44k6BHDmohybJQSRXnjkI4jtA==",
+      "path": "microsoft.entityframeworkcore.abstractions/9.0.20",
+      "hashPath": "microsoft.entityframeworkcore.abstractions.9.0.20.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Design/9.0.0": {
+    "Microsoft.EntityFrameworkCore.Design/9.0.20": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Pqo8I+yHJ3VQrAoY0hiSncf+5P7gN/RkNilK5e+/K/yKh+yAWxdUAI6t0TG26a9VPlCa9FhyklzyFvRyj3YG9A==",
-      "path": "microsoft.entityframeworkcore.design/9.0.0",
-      "hashPath": "microsoft.entityframeworkcore.design.9.0.0.nupkg.sha512"
+      "sha512": "sha512-6ys+wQciRl/WfPAOQ3hMUlCwp/ScbuiHA7f843Ax1PZolWUSaZMtYmb1ccgeyxTZ0Yolyz+OMjwtNhBp6gRJ8Q==",
+      "path": "microsoft.entityframeworkcore.design/9.0.20",
+      "hashPath": "microsoft.entityframeworkcore.design.9.0.20.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore.InMemory/9.0.0": {
       "type": "package",
@@ -566,19 +566,19 @@
       "path": "microsoft.entityframeworkcore.inmemory/9.0.0",
       "hashPath": "microsoft.entityframeworkcore.inmemory.9.0.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational/9.0.0": {
+    "Microsoft.EntityFrameworkCore.Relational/9.0.20": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-j+msw6fWgAE9M3Q/5B9Uhv7pdAdAQUvFPJAiBJmoy+OXvehVbfbCE8ftMAa51Uo2ZeiqVnHShhnv4Y4UJJmUzA==",
-      "path": "microsoft.entityframeworkcore.relational/9.0.0",
-      "hashPath": "microsoft.entityframeworkcore.relational.9.0.0.nupkg.sha512"
+      "sha512": "sha512-84oLYJjAA8hSrwPfkq0cm9dBdf3uFbBwqJVYjmS4zEoKJ87cj/Knyp1iYAHe95ToJHeo8APAPG0OlA6S4GUUlw==",
+      "path": "microsoft.entityframeworkcore.relational/9.0.20",
+      "hashPath": "microsoft.entityframeworkcore.relational.9.0.20.nupkg.sha512"
     },
-    "Microsoft.Extensions.DependencyModel/9.0.0": {
+    "Microsoft.Extensions.DependencyModel/9.0.20": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-saxr2XzwgDU77LaQfYFXmddEDRUKHF4DaGMZkNB3qjdVSZlax3//dGJagJkKrGMIPNZs2jVFXITyCCR6UHJNdA==",
-      "path": "microsoft.extensions.dependencymodel/9.0.0",
-      "hashPath": "microsoft.extensions.dependencymodel.9.0.0.nupkg.sha512"
+      "sha512": "sha512-bhUlryY1AIFsB9kpR6/KMPWryLHoBPBpRSi79GQa4XVcYyW1PGA3Zi+rdu1wxJ5DWuA1Jr6DAVRgrgPnYOu8eg==",
+      "path": "microsoft.extensions.dependencymodel/9.0.20",
+      "hashPath": "microsoft.extensions.dependencymodel.9.0.20.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",

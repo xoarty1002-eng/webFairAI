@@ -20,39 +20,36 @@ public class FairAiDbContext : DbContext
     public DbSet<NeuronRecord> NeuronRecords => Set<NeuronRecord>();
     public DbSet<CoreRecord> CoreRecords => Set<CoreRecord>();
 
-protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<ChatSession>()
-        .HasMany(s => s.Messages)
-        .WithOne(m => m.Session)
-        .HasForeignKey(m => m.SessionId)
-        .OnDelete(DeleteBehavior.Cascade);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ChatSession>()
+            .HasMany(s => s.Messages)
+            .WithOne(m => m.Session)
+            .HasForeignKey(m => m.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    modelBuilder.Entity<LanguageEntry>()
-        .HasIndex(x => x.Word)
-        .IsUnique();
+        modelBuilder.Entity<LanguageEntry>()
+            .HasIndex(x => x.Word)
+            .IsUnique();
 
-    modelBuilder.Entity<ChatMessage>()
-        .Property(x => x.Content)
-        .HasMaxLength(4000);
+        modelBuilder.Entity<ChatMessage>()
+            .Property(x => x.Content)
+            .HasMaxLength(4000);
 
-    // FIX: Manually mapping names to exact lowercase strings for Linux MySQL
-    modelBuilder.Entity<DataModel>().ToTable("dataset");
-    modelBuilder.Entity<NeuronModel>().ToTable("neuronset");
-    modelBuilder.Entity<CoreModel>().ToTable("coreset");
-    modelBuilder.Entity<ChatSession>().ToTable("chatsessions");
-    modelBuilder.Entity<ChatMessage>().ToTable("chatmessages");
-    modelBuilder.Entity<LanguageEntry>().ToTable("languageentries");
-    modelBuilder.Entity<AiStateRecord>().ToTable("aistatereCORDS"); // lowercase matching target
-    modelBuilder.Entity<NodeRecord>().ToTable("noderecords");
-    modelBuilder.Entity<NeuronRecord>().ToTable("neuronrecords");
-    modelBuilder.Entity<CoreRecord>().ToTable("corerecords");
+        // Dynamic clean lowercase table mapping structure
+        modelBuilder.Entity<DataModel>().ToTable("dataset");
+        modelBuilder.Entity<NeuronModel>().ToTable("neuronset");
+        modelBuilder.Entity<CoreModel>().ToTable("coreset");
+        modelBuilder.Entity<ChatSession>().ToTable("chatsessions");
+        modelBuilder.Entity<ChatMessage>().ToTable("chatmessages");
+        modelBuilder.Entity<LanguageEntry>().ToTable("languageentries");
+        modelBuilder.Entity<AiStateRecord>().ToTable("aistaterecords");
+        modelBuilder.Entity<NodeRecord>().ToTable("noderecords");
+        modelBuilder.Entity<NeuronRecord>().ToTable("neuronrecords");
+        modelBuilder.Entity<CoreRecord>().ToTable("corerecords");
 
-    // Clean up casing for matching records
-    modelBuilder.Entity<AiStateRecord>().ToTable("aistaterecords");
-
-    base.OnModelCreating(modelBuilder);
-}
+        base.OnModelCreating(modelBuilder);
+    }
 }
 public class ChatSession
 {
@@ -70,6 +67,10 @@ public class ChatMessage
     public string Role { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public double? X { get; set; }
+    public double? Y { get; set; }
+    public double? Z { get; set; }
+
 }
 
 public class LanguageEntry

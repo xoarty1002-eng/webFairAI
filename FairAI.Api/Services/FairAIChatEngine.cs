@@ -2,6 +2,7 @@ using FairAI.Api.Data;
 using FairAI.Api.Domain;
 using FairAI.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 
 namespace FairAI.Api.Services;
 
@@ -30,7 +31,11 @@ public class FairAIChatEngine
         db.Database.EnsureCreated();
         return db;
     }
-
+    public void Vote(double x, double y, double z, string voteType)
+    {
+        var coreDepth = new CoreDepth(8, _db);
+        coreDepth.Vote(x, y, z, voteType);
+    }
     public string ProcessText(string prompt, string? user)
     {
         return Process(prompt, user).Message;
@@ -119,7 +124,10 @@ public class FairAIChatEngine
             Prompt = normalizedPrompt,
             Message = generatedText,
             DepthValue = processedState.DepthValue,
-            HistoryValue = processedState.HistoryValue
+            HistoryValue = processedState.HistoryValue,
+            X = verifiedNode.DepthValue,
+            Y = verifiedNode.MiddleValue,
+            Z = verifiedNode.HistoryValue
         };
     }
 
