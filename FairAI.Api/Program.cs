@@ -7,15 +7,18 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
 
 builder.Services.AddDbContext<FairAiDbContext>((serviceProvider, options) =>
 {
+    // Check if we are running under the Entity Framework design-time tool CLI
+    bool isDesignTime = EF.IsDesignTime;
+
     if (!string.IsNullOrWhiteSpace(connectionString))
     {
         try
         {
-             var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
-             options.UseMySql(connectionString, serverVersion, mySqlOptions =>
+            options.UseMySql(connectionString, serverVersion, mySqlOptions =>
             {
                 mySqlOptions.EnableRetryOnFailure();
             });
@@ -23,12 +26,26 @@ builder.Services.AddDbContext<FairAiDbContext>((serviceProvider, options) =>
         }
         catch
         {
-            options.UseInMemoryDatabase("FairAI-Local-Fallback");
-            return;
+            // Only fallback if we aren't trying to run migrations
+            if (!isDesignTime)
+            {
+                options.UseInMemoryDatabase("FairAI-Local-Fallback");
+                return;
+            }
         }
     }
 
-    options.UseInMemoryDatabase("FairAI-Local-Fallback");
+    // CRITICAL FIX: If we are running migrations via CLI tool, we MUST provide a MySQL context, 
+    // even if the connection string isn't active right now.
+    if (isDesignTime)
+    {
+        var dummyConnectionString = "Server=localhost;Database=FairAIDb;Uid=root;Pwd=;";
+        options.UseMySql(dummyConnectionString, serverVersion);
+    }
+    else
+    {
+        options.UseInMemoryDatabase("FairAI-Local-Fallback");
+    }
 });
 
 builder.Services.AddScoped<FairAIChatEngine>();
