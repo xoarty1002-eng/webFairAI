@@ -78,19 +78,10 @@ export default function Home() {
             const response = await fetch(`/api/vote`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ x, y, z, type: voteType }),
+                body: JSON.stringify({ x, y, z, voteType }),
             });
 
             if (!response.ok) throw new Error('Vote failed');
-
-            const data = await response.json(); // Expected: { x: number, y: number, z: number }
-
-            // Update the specific message's coordinates in the state using its index
-            setMessages((current) =>
-                current.map((msg, idx) =>
-                    idx === index ? { ...msg, x: data.x, y: data.y, z: data.z } : msg
-                )
-            );
 
         } catch (error) {
             console.error("Failed to fetch coordinate update:", error);
@@ -137,9 +128,6 @@ export default function Home() {
                                     >
                                         Vote --
                                     </button>
-                                    <span style={{ fontSize: '12px', color: '#888', alignSelf: 'center' }}>
-                                        ({message.x}, {message.y}, {message.z})
-                                    </span>
                                 </div>
                             )}
                         </div>
