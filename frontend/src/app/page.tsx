@@ -167,6 +167,14 @@ export default function Home() {
   );
 }
 
+            const data = await response.json(); // Expected: { x: number, y: number, z: number }
+
+            // Update the specific message in the list with the fetched x, y, z
+
+        } catch (error) {
+            console.error("Failed to fetch coordinate update:", error);
+        }
+    };
   return (
     <main className={styles.page}>
       <section className={styles.shell}>
@@ -190,7 +198,23 @@ export default function Home() {
           {messages.map((message, index) => (
             <div key={`${message.role}-${index}`} className={`${styles.messageRow} ${styles[message.role]}`}>
               <div className={styles.avatar}>{message.role === 'assistant' ? 'FA' : 'YO'}</div>
-              <div className={styles.bubble}>{message.content}</div>
+                  <div className={styles.bubble}>{message.content}</div>
+                  {message.role === 'assistant' && (
+                      <>
+                          <button
+                              onClick={() => handleVote(message.x, message.y, message.z, 'up')}
+                              className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                          >
+                              Vote ++
+                          </button>
+                          <button
+                              onClick={() => handleVote(message.x, message.y, message.z, 'down')}
+                              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                          >
+                              Vote --
+                          </button>
+                      </>
+                  )}
             </div>
           ))}
           {loading && <div className={`${styles.messageRow} ${styles.assistant}`}><div className={styles.avatar}>FA</div><div className={styles.bubble}>Thinking…</div></div>}
