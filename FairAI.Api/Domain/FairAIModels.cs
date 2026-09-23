@@ -297,9 +297,9 @@ public class CoreDepth
                 {
                     for (var k = j + 1; k < cores.ToList().Count; k++)
                     {
-                        var pos1 = cores[i].Position+request.DepthValue;
-                        var pos2 = cores[j].Position+request.HistoryValue;
-                        var pos3 = cores[k].Position+request.MiddleValue;
+                        var pos1 = cores[i].Position+request.DepthValue % 1;
+                        var pos2 = cores[j].Position+request.HistoryValue % 1;
+                        var pos3 = cores[k].Position+request.MiddleValue % 1;
                         var axis1 = pos1 >= 0.5 ? pos1 - 0.5 : pos1;
                         var axis2 = pos2 >= 0.5 ? pos2 - 0.5 : pos2;
                         var axis3 = pos3 >= 0.5 ? pos3 - 0.5 : pos3;
