@@ -66,9 +66,9 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
-            "SixLabors.ImageSharp": {
+            "SkiaSharp": {
               "target": "Package",
-              "version": "[4.1.2, )"
+              "version": "[4.152.1, )"
             }
           },
           "imports": [

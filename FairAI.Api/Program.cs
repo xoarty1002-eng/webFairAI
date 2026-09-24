@@ -3,11 +3,10 @@ using FairAI.Api.Models;
 using FairAI.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
+using SkiaSharp; // Free replacement engine
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -196,35 +195,36 @@ public static class lib
     {
         if (string.IsNullOrWhiteSpace(message)) return string.Empty;
 
-        // Regex to catch all data:image tokens
+        // 1. Isolate the base64 tokens inside the string
         var regex = new Regex(@"data:image\/[a-zA-Z]*;base64,([^\s""]+)", RegexOptions.Compiled);
         var matches = regex.Matches(message);
 
-        var loadedImages = new List<Image<Rgba32>>();
+        var loadedImages = new List<SKBitmap>();
         int maxWidth = 0;
         int maxHeight = 0;
 
-        // 1. Process and load all matched images
         foreach (Match match in matches)
         {
             try
             {
                 byte[] imageBytes = Convert.FromBase64String(match.Groups[1].Value);
-                var img = SixLabors.ImageSharp.Image.Load<Rgba32>(imageBytes);
 
-                loadedImages.Add(img);
+                // Decodes the image natively using Skia
+                SKBitmap bitmap = SKBitmap.Decode(imageBytes);
+                if (bitmap == null) continue;
 
-                if (img.Width > maxWidth) maxWidth = img.Width;
-                if (img.Height > maxHeight) maxHeight = img.Height;
+                loadedImages.Add(bitmap);
+
+                if (bitmap.Width > maxWidth) maxWidth = bitmap.Width;
+                if (bitmap.Height > maxHeight) maxHeight = bitmap.Height;
             }
             catch
             {
-                continue; // Skip malformed images
+                continue; // Skip corrupted image blocks safely
             }
         }
 
-        // 2. Extract words that are NOT part of any picture strings
-        // We split by whitespace, and skip any chunk that looks like an inline base64 image
+        // 2. Extract regular non-image words
         string[] chunks = message.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         var textWords = new List<string>();
 
@@ -235,17 +235,16 @@ public static class lib
                 textWords.Add(chunk);
             }
         }
-
         string cleanMessage = string.Join(" ", textWords);
 
-        // If no valid images were found, return the text with an empty image string
+        // If there are no images, exit early with just the text
         if (loadedImages.Count == 0)
         {
             return cleanMessage;
         }
 
-        // 3. Create the sum canvas layer
-        using (var outputImage = new Image<Rgba32>(maxWidth, maxHeight))
+        // 3. Construct the combined canvas layer using fixed coordinates
+        using (var outputBitmap = new SKBitmap(maxWidth, maxHeight, SKColorType.Rgba8888, SKAlphaType.Premul))
         {
             for (int y = 0; y < maxHeight; y++)
             {
@@ -253,39 +252,48 @@ public static class lib
                 {
                     int totalR = 0, totalG = 0, totalB = 0, totalA = 0;
 
+                    // Loop through every extracted picture layer
                     foreach (var img in loadedImages)
                     {
                         if (x < img.Width && y < img.Height)
                         {
-                            Rgba32 pixel = img[x, y];
-                            totalR += pixel.R;
-                            totalG += pixel.G;
-                            totalB += pixel.B;
-                            totalA += pixel.A;
+                            // Extract color channel data efficiently
+                            SKColor color = img.GetPixel(x, y);
+                            totalR += color.Red;
+                            totalG += color.Green;
+                            totalB += color.Blue;
+                            totalA += color.Alpha;
                         }
                     }
 
-                    outputImage[x, y] = new Rgba32(
+                    // Create the final custom pixel with modulo 255 calculations applied
+                    var finalColor = new SKColor(
                         (byte)(totalR % 255),
                         (byte)(totalG % 255),
                         (byte)(totalB % 255),
                         (byte)(totalA == 0 ? 255 : totalA % 255)
                     );
+
+                    outputBitmap.SetPixel(x, y, finalColor);
                 }
             }
 
+            // Clean up loaded unmanaged bitmaps out of memory immediately
             foreach (var img in loadedImages)
             {
                 img.Dispose();
             }
 
+            // 4. Encode the combined bitmap back into PNG base64 stream string
+            using (var image = SKImage.FromBitmap(outputBitmap))
+            using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
             using (var ms = new MemoryStream())
             {
-                outputImage.Save(ms, new PngEncoder());
+                data.SaveTo(ms);
                 byte[] outputBytes = ms.ToArray();
                 string imageResult = $"data:image/png;base64,{Convert.ToBase64String(outputBytes)}";
 
-                return cleanMessage + " " + imageResult;
+                return cleanMessage +" "+imageResult;
             }
         }
     }
