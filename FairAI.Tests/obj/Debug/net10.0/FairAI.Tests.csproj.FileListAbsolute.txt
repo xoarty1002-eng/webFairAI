@@ -221,3 +221,5 @@ C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\obj\Debug\net10.0\refint\F
 C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\obj\Debug\net10.0\FairAI.Tests.pdb
 C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\obj\Debug\net10.0\FairAI.Tests.genruntimeconfig.cache
 C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\obj\Debug\net10.0\ref\FairAI.Tests.dll
+C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+C:\Users\xoart\source\repos\ne\webFairAI\FairAI.Tests\bin\Debug\net10.0\System.IO.Hashing.dll
