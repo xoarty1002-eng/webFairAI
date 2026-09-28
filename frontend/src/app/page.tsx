@@ -145,6 +145,7 @@ export default function Home() {
         }
     };
     const handleTranslate = async (index: number, x: number | null, y: number | null, z: number | null, exchangeRate: number | null) => {
+        console.log(x, y, z, exchangeRate);
         setLoading(true);
         if (x === null || y === null || z === null || exchangeRate === null) return;
         try {
