@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using static System.Collections.Specialized.BitVector32;
 using static System.Net.Mime.MediaTypeNames;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -143,8 +144,20 @@ app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine 
 {
     try
     {
-        engine.Translate(request.X, request.Y, request.Z, request.ExchangeRate);
-        return Results.Ok();
+        var response = engine.Translate(request.X, request.Y, request.Z, request.ExchangeRate);
+        return Results.Ok(new
+        {
+            sessionId = response.SessionId,
+            prompt = response.Prompt,
+            message = lib.ProcessMessageAndCombineImages(response.Message),
+            depthValue = response.DepthValue,
+            historyValue = response.HistoryValue,
+            sessionTitle = "session?.Title",
+            x = response.X,
+            y = response.Y,
+            z = response.Z
+        });
+
     }
     catch (Exception ex)
     {
