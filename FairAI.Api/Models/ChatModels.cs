@@ -5,7 +5,20 @@ public class ChatRequest
     public string Message { get; set; } = string.Empty;
     public string? UserName { get; set; }
 }
-
+public class VoteRequest
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Z { get; set; }
+    public string VoteType { get; set; }
+}
+public class TranslateRequest
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Z { get; set; }
+    public double ExchangeRate { get; set; }
+}
 public class ChatResponse
 {
     public int SessionId { get; set; }

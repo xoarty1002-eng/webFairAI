@@ -138,6 +138,18 @@ app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
     {
         return Results.BadRequest(new { message = ex.Message });
     }
+}); 
+app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine engine) =>
+{
+    try
+    {
+        engine.Translate(request.X, request.Y, request.Z, request.ExchangeRate);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
 });
 app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
 {
@@ -182,13 +194,7 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
 app.MapFallbackToFile("index.html"); 
 app.Run();
 
-public class VoteRequest
-{
-    public double X { get; set; }
-    public double Y { get; set; }
-    public double Z { get; set; }
-    public string VoteType { get; set; }
-}
+
 public static class lib
 {
     public static string ProcessMessageAndCombineImages(string message)

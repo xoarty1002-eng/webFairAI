@@ -3,6 +3,7 @@ using FairAI.Api.Domain;
 using FairAI.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace FairAI.Api.Services;
 
@@ -35,6 +36,26 @@ public class FairAIChatEngine
     {
         var coreDepth = new CoreDepth(8, _db);
         coreDepth.Vote(x, y, z, voteType);
+    }
+    public ChatResponse Translate(double x, double y, double z, double exchangeRate)
+    {
+        var languagePool = new LanguagePool(_db);
+        var depthPool = new DepthPool(32, _db);
+        var verifiedNode = new NodeModel() { DepthValue = (x * exchangeRate) % 1, HistoryValue = (y * exchangeRate) % 1, MiddleValue = (z * exchangeRate) % 1, Id = 0 };
+        var processedState = depthPool.Up(verifiedNode);
+
+        var generatedText = languagePool.Generate(processedState, null);
+        return new ChatResponse
+        {
+            SessionId = 0,
+            Prompt = "",
+            Message = generatedText,
+            DepthValue = processedState.DepthValue,
+            HistoryValue = processedState.HistoryValue,
+            X = x,
+            Y = y,
+            Z = z
+        };
     }
     public string ProcessText(string prompt, string? user)
     {

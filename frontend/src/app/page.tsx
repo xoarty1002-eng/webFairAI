@@ -16,8 +16,10 @@ export default function Home() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState<string>('');
+    const [usdToEuro, setUsdToEuro] = useState<string>('1.0');
     const [selectedImage, setSelectedImage] = useState<string | null>(null); // Base64 string state
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
@@ -31,6 +33,9 @@ export default function Home() {
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
         setUsername(event.target.value);
+    };
+    const handleChange2 = (event: ChangeEvent<HTMLInputElement>): void => {
+        setUsdToEuro(event.target.value);
     };
 
     // Handle image file picking and convert it to base64
@@ -123,7 +128,8 @@ export default function Home() {
         finally {
             setLoading(false);
         }
-    }    const handleVote = async (index: number, x: number | null, y: number | null, z: number | null, voteType: 'up' | 'down') => {
+    }
+    const handleVote = async (index: number, x: number | null, y: number | null, z: number | null, voteType: 'up' | 'down') => {
         if (x === null || y === null || z === null) return;
 
         try {
@@ -137,6 +143,58 @@ export default function Home() {
         } catch (error) {
             console.error("Failed to fetch coordinate update:", error);
         }
+    };
+    const handleTranslate = async (index: number, x: number | null, y: number | null, z: number | null, exchangeRate: number | null) => {
+        setLoading(true);
+        if (x === null || y === null || z === null || exchangeRate === null) return;
+        try {
+            const response = await fetch(`/api/translate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x, y, z, exchangeRate }),
+            });
+
+            if (!response.ok) throw new Error('Translate failed');
+            const data = await response.json();
+
+            // --- PARSING EXTRACTION FOR BASE64 IMAGES ---
+            let textContent = data.message || '';
+            let extractedImage: string | null = null;
+
+            // Split string into separate chunks by blanks/whitespace
+            const words = textContent.split(/\s+/);
+
+            // Find an item matching the base64 media marker
+            const base64ImageWord = words.find((word: string) => word.startsWith('data:image/'));
+
+            if (base64ImageWord) {
+                extractedImage = base64ImageWord;
+                // Replace the massive blob parameter inside the string payload
+                textContent = textContent.replace(base64ImageWord, '[Image displayed below]').trim();
+            }
+
+            setMessages((current) => [
+                ...current,
+                {
+                    role: 'assistant',
+                    content: textContent,
+                    image: extractedImage,
+                    x: data.x,
+                    y: data.y,
+                    z: data.z
+                }
+            ]);
+        }
+        catch (error) {
+            setMessages((current) => [
+                ...current,
+                { role: 'assistant', content: 'FairAI failed to translate.', x: null, y: null, z: null },
+            ]);
+        }
+        finally {
+            setLoading(false);
+        }
+
     };
 
     return (
@@ -190,6 +248,12 @@ export default function Home() {
                                     >
                                         Vote --
                                     </button>
+                                    <button
+                                        onClick={() => handleTranslate(index, message.x, message.y, message.z, parseFloat(usdToEuro))}
+                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                    >
+                                        Translate
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -239,35 +303,68 @@ export default function Home() {
                         {loading ? 'Sending...' : 'Send'}
                     </button>
                 </form>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px', gap: '15px' }}>
-                    <div style={{ backgroundColor: 'lightcoral', padding: '5px', borderRadius: '4px' }}>
-                        <a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
-                            <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments" />
-                        </a>
-                    </div>
-                    <div style={{ backgroundColor: 'lightgreen', padding: '5px', borderRadius: '4px' }}>
-                        <a href="https://nowpayments.io/payment/?iid=4914149117&source=button" target="_blank" rel="noreferrer noopener">
-                            <img src="https://nowpayments.io/images/embeds/payments-button-white.svg" alt="Cryptocurrency & Bitcoin payment button by NOWPayments" />
-                        </a>
-                    </div>
-                    <div>
-                        <label htmlFor="username-input" style={{ fontWeight: 'bold', color: '#555', marginRight: '8px' }}>
-                            Username:
-                        </label>
-                        <input
-                            id="username-input"
-                            type="text"
-                            value={username}
-                            onChange={handleChange}
-                            placeholder="Enter your username"
-                            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'black', color: 'white' }}
-                        />
-                        <p style={{ fontSize: '14px', color: '#555', marginTop: '4px' }}>
-                            Current state: <strong>{username}</strong>
-                        </p>
-                    </div>
-                </div>
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    style={{
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        marginBottom: '10px',
+                        transition: 'background-color 0.2s'
+                    }}
+                >
+                    {isOpen ? '✕ Close Menu' : '☰ Open Menu'}
+                </button>
+                {isOpen && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px', gap: '15px' }}>
+                        <div style={{ backgroundColor: 'lightcoral', padding: '5px', borderRadius: '4px' }}>
+                            <a href="https://nowpayments.io/payment/?iid=5715057547&source=button" target="_blank" rel="noreferrer noopener">
+                                <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments" />
+                            </a>
+                        </div>
+                        <div style={{ backgroundColor: 'lightgreen', padding: '5px', borderRadius: '4px' }}>
+                            <a href="https://nowpayments.io/payment/?iid=4914149117&source=button" target="_blank" rel="noreferrer noopener">
+                                <img src="https://nowpayments.io/images/embeds/payments-button-white.svg" alt="Cryptocurrency & Bitcoin payment button by NOWPayments" />
+                            </a>
+                        </div>
+                        <div>
+                            <label htmlFor="username-input" style={{ fontWeight: 'bold', color: '#555', marginRight: '8px' }}>
+                                Username:
+                            </label>
+                            <input
+                                id="username-input"
+                                type="text"
+                                value={username}
+                                onChange={handleChange}
+                                placeholder="Enter your username"
+                                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'black', color: 'white' }}
+                            />
+                            <p style={{ fontSize: '14px', color: '#555', marginTop: '4px' }}>
+                                Current state: <strong>{username}</strong>
+                            </p>
+                        </div>
+                        <div>
+                            <label htmlFor="username-input" style={{ fontWeight: 'bold', color: '#555', marginRight: '8px' }}>
+                                usd/euro:
+                            </label>
+                            <input
+                                id="username-input"
+                                type="text"
+                                value={usdToEuro}
+                                onChange={handleChange2}
+                                placeholder="Enter usd to euro"
+                                style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'black', color: 'white' }}
+                            />
+                            <p style={{ fontSize: '14px', color: '#555', marginTop: '4px' }}>
+                                Current state: <strong>{usdToEuro}</strong>
+                            </p>
+                        </div>
+                    </div>)}
 
             </section>
         </main>
