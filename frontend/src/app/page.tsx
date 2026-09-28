@@ -186,12 +186,18 @@ export default function Home() {
             ]);
         }
         catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             setMessages((current) => [
                 ...current,
-                { role: 'assistant', content: 'FairAI failed to translate.', x: null, y: null, z: null },
+                {
+                    role: 'assistant',
+                    content: `FairAI failed to translate. (${errorMessage})`,
+                    x: null,
+                    y: null,
+                    z: null
+                },
             ]);
-        }
-        finally {
+        }        finally {
             setLoading(false);
         }
 

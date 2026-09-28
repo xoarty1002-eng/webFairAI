@@ -25,19 +25,28 @@ public class ChatEngineTests
        Assert.False(string.IsNullOrWhiteSpace(result.Message));
        Assert.Contains("Hello", result.Message, StringComparison.OrdinalIgnoreCase);
    }
-
-/*   [Fact]
-   public void Process_ShouldAddResponse_ForUserPrompt()
+    [Fact]
+    public void Process_ShouldTranslateResponse()
     {
-        var lp = new LanguagePool();
-
-        var result = lp.Calculate("Hello");
-
-        Assert.False(lp.Data.Count == 0);
-        Assert.False(result == null);
-        Assert.True(lp.Data.FirstOrDefault(x=> x.Word == "Hello") != null);
+        var engine = new FairAIChatEngine();
+        var result = engine.Process("Hello", null);
+        result = engine.Translate(0.5, 0.5, 0.5, 0.8);
+        Assert.False(string.IsNullOrWhiteSpace(result.Message));
+        Assert.Contains("Hello", result.Message, StringComparison.OrdinalIgnoreCase);
     }
-*/
+
+    /*   [Fact]
+       public void Process_ShouldAddResponse_ForUserPrompt()
+        {
+            var lp = new LanguagePool();
+
+            var result = lp.Calculate("Hello");
+
+            Assert.False(lp.Data.Count == 0);
+            Assert.False(result == null);
+            Assert.True(lp.Data.FirstOrDefault(x=> x.Word == "Hello") != null);
+        }
+    */
 
 }
 
