@@ -130,10 +130,16 @@ export default function Home() {
         }
     }
     const handleVote = async (index: number, x: number | null, y: number | null, z: number | null, voteType: 'up' | 'down') => {
+        const apiBaseUrl =
+            process.env.NEXT_PUBLIC_API_URL ||
+            (typeof window !== 'undefined' && window.location.hostname.endsWith('.app.github.dev')
+                ? `https://${window.location.hostname.replace('-3000.', '-5124.')}`
+                : typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5124');
+
         if (x === null || y === null || z === null) return;
 
         try {
-            const response = await fetch(`/api/vote`, {
+            const response = await fetch(`${apiBaseUrl}/api/vote`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ x, y, z, voteType }),
@@ -145,11 +151,16 @@ export default function Home() {
         }
     };
     const handleTranslate = async (index: number, x: number | null, y: number | null, z: number | null, exchangeRate: number | null) => {
-        console.log(x, y, z, exchangeRate);
+        const apiBaseUrl =
+            process.env.NEXT_PUBLIC_API_URL ||
+            (typeof window !== 'undefined' && window.location.hostname.endsWith('.app.github.dev')
+                ? `https://${window.location.hostname.replace('-3000.', '-5124.')}`
+                : typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5124');
+
         setLoading(true);
         if (x === null || y === null || z === null || exchangeRate === null) return;
         try {
-            const response = await fetch(`/api/translate`, {
+            const response = await fetch(`${apiBaseUrl}/api/translate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ x, y, z, exchangeRate }),
