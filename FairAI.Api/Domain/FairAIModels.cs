@@ -47,18 +47,22 @@ public class LanguagePool
         _context = context;
     }
 
-    public void Add(string word, string? user)
+    public void Add(string word, string? user, double? HistoryValue)
     {
         if (string.IsNullOrWhiteSpace(word)) return;
 
         if (_context.DataSet.ToList().Any(d => d.User == user && string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
 
         var random = Random.Shared;
+        if (HistoryValue == null)
+        {
+            HistoryValue = random.NextDouble();
+        }
         _context.DataSet.Add(new DataModel
         {
             Word = word,
             DepthValue = random.NextDouble(),
-            HistoryValue = random.NextDouble(),
+            HistoryValue = (double)HistoryValue,
             User = user
         });
         _context.SaveChanges();
@@ -72,7 +76,7 @@ public class LanguagePool
 
         foreach (var element in dataArray)
         {
-            Add(element, user);
+            Add(element, user, null);
             var match = _context.DataSet.ToList().FirstOrDefault(d => d.User == user && string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
             if (match is null) continue;
             result.DepthValue = (result.DepthValue + match.DepthValue) / 2;
@@ -128,7 +132,7 @@ public class LanguagePool
                     wordCount--;
                     _context.DataSet.Remove(closestObject);
                     _context.SaveChanges();
-                    Add(closestObject.Word, user);
+                    Add(closestObject.Word, user, closestObject.HistoryValue);
                 }
             }
         }
