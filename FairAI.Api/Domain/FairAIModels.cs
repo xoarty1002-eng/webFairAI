@@ -136,7 +136,7 @@ public class LanguagePool
                 }
             }
         }
-        return str;
+        return str + $" script:execute({disp});";
     }
 }
 
