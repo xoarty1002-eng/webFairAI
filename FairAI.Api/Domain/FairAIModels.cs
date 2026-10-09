@@ -105,7 +105,7 @@ public class LanguagePool
         var dmY = dm.DepthValue;
         var str = "";
         DataModel closestObject;
-        var flag = true;
+        var flag = false;
         var wordCount = 0;
         while (true)
         {
@@ -147,7 +147,7 @@ public class LanguagePool
             }
         }
         Add("FairAI", user, disp);
-        return $"debug:{(int)(dm.HistoryValue * 1000)} {(int)(dm.DepthValue * 1000)} response: " + str;
+        return str;
     }
 }
 
