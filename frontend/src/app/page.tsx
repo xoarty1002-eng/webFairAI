@@ -268,36 +268,37 @@ export default function Home() {
                                     </div>
                                 )}
                                 {message.content}
+                                {message.role === 'assistant' && message.x !== null && (
+                                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                                        <button
+                                            onClick={() => handleVote(index, message.x, message.y, message.z, 'up')}
+                                            className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                        >
+                                            Vote ++
+                                        </button>
+                                        <button
+                                            onClick={() => handleVote(index, message.x, message.y, message.z, 'down')}
+                                            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                        >
+                                            Vote --
+                                        </button>
+                                        <button
+                                            onClick={() => handleTranslate(index, message.x, message.y, message.z, parseFloat(usdToEuro))}
+                                            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                        >
+                                            Translate
+                                        </button>
+                                        <button
+                                            onClick={() => handleReport(message.content)}
+                                            className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                        >
+                                            Report
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
-                            {message.role === 'assistant' && message.x !== null && (
-                                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                                    <button
-                                        onClick={() => handleVote(index, message.x, message.y, message.z, 'up')}
-                                        className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
-                                    >
-                                        Vote ++
-                                    </button>
-                                    <button
-                                        onClick={() => handleVote(index, message.x, message.y, message.z, 'down')}
-                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                    >
-                                        Vote --
-                                    </button>
-                                    <button
-                                        onClick={() => handleTranslate(index, message.x, message.y, message.z, parseFloat(usdToEuro))}
-                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                    >
-                                        Translate
-                                    </button>
-                                    <button
-                                        onClick={() => handleReport(message.content)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                                    >
-                                        Report
-                                    </button>
-                                </div>
-                            )}
+                            
                         </div>
                     ))}
                     {loading && (
