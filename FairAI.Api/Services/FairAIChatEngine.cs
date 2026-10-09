@@ -93,7 +93,7 @@ public class FairAIChatEngine
         var coreDepth = new CoreDepth(8, _db);
         var verifiedNode = coreDepth.Check(node);
         var processedState = depthPool.Up(verifiedNode);
-        var generatedText = languagePool.Generate(processedState, user);
+        var generatedText = $"{(int)processedState.HistoryValue*100} {(int)processedState.DepthValue * 100} " +languagePool.Generate(processedState, user);
         if (string.IsNullOrWhiteSpace(generatedText))
         {
             generatedText = "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
