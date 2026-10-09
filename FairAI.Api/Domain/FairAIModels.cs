@@ -48,22 +48,22 @@ public class LanguagePool
         _context = context;
     }
 
-    public void Add(string word, string? user, double? HistoryValue)
+    public void Add(string word, string? user, double? DepthValue)
     {
         if (string.IsNullOrWhiteSpace(word)) return;
 
         if (_context.DataSet.ToList().Any(d => d.User == user && string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
 
         var random = Random.Shared;
-        if (HistoryValue == null)
+        if (DepthValue == null)
         {
-            HistoryValue = random.NextDouble();
+            DepthValue = random.NextDouble();
         }
         _context.DataSet.Add(new DataModel
         {
             Word = word,
-            DepthValue = random.NextDouble(),
-            HistoryValue = (double)HistoryValue,
+            DepthValue = (double)DepthValue,
+            HistoryValue = random.NextDouble(),
             User = user
         });
         _context.SaveChanges();
@@ -147,7 +147,7 @@ public class LanguagePool
             }
         }
         Add("FairAI", user, disp);
-        return $"debug:{(int)(dm.HistoryValue * 1000)} {(int)(dm.DepthValue * 1000)}=> " + str;
+        return $"debug:{(int)(dm.HistoryValue * 1000)} {(int)(dm.DepthValue * 1000)} response: " + str;
     }
 }
 
