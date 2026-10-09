@@ -147,7 +147,7 @@ public class LanguagePool
             }
         }
         Add("FairAI", user, disp);
-        return str;
+        return $"debug:{(int)(dm.HistoryValue * 1000)} {(int)(dm.DepthValue * 1000)}=> " + str;
     }
 }
 
