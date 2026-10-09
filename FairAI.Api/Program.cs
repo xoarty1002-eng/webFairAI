@@ -140,6 +140,18 @@ app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
         return Results.BadRequest(new { message = ex.Message });
     }
 }); 
+app.MapPost("/api/report", async (string content, FairAIChatEngine engine) =>
+{
+    try
+    {
+        engine.Report(content);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { message = ex.Message });
+    }
+});
 app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine engine) =>
 {
     try
