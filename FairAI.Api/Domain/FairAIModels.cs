@@ -136,7 +136,8 @@ public class LanguagePool
                 }
             }
         }
-        return str + $" script:execute({disp});";
+        Add("FairAI", user, disp);
+        return str;
     }
 }
 
