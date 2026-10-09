@@ -78,7 +78,7 @@ public class FairAIChatEngine
         };
 
         _db.ChatSessions.Add(session);
-        var index = 1000;
+        var index = 100;
         var generatedText = "";
         var verifiedNode = new NodeModel();
         var processedState = new StateModel();
