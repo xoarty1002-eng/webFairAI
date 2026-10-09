@@ -2,6 +2,7 @@ using FairAI.Api.Data;
 using FairAI.Api.Domain;
 using FairAI.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.Arm;
 using System.Xml.Linq;
 using static System.Collections.Specialized.BitVector32;
 
@@ -77,19 +78,36 @@ public class FairAIChatEngine
         };
 
         _db.ChatSessions.Add(session);
-
-         
-        var words = normalizedPrompt
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var languagePool = new LanguagePool(_db);
-        var depthPool = new DepthPool(32, _db);
-        var state = languagePool.Calculate(normalizedPrompt, user);
-       var node = depthPool.Down(state);
-        var coreDepth = new CoreDepth(8, _db);
-        var verifiedNode = coreDepth.Check(node);
-        var processedState = depthPool.Up(verifiedNode);
-
-        var generatedText = languagePool.Generate(processedState, user);
+        var index = 1000;
+        var generatedText = "";
+        var verifiedNode = new NodeModel();
+        var processedState = new StateModel();
+        while (index > 0)
+        {
+            index--;
+            var words = normalizedPrompt
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var languagePool = new LanguagePool(_db);
+            var depthPool = new DepthPool(32, _db);
+            var state = languagePool.Calculate(normalizedPrompt, user);
+            var node = depthPool.Down(state);
+            var coreDepth = new CoreDepth(8, _db);
+            verifiedNode = coreDepth.Check(node);
+            processedState = depthPool.Up(verifiedNode);
+            generatedText = languagePool.Generate(processedState, user);
+            if (generatedText.Contains("FairAI"))
+            {
+                break;
+            }
+            else
+            {
+                generatedText = generatedText + " FairAI";
+            }
+        }
+        if (index == 0)
+        {
+            generatedText = "No response";
+        }
         if (string.IsNullOrWhiteSpace(generatedText))
         {
             generatedText = "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
@@ -117,43 +135,6 @@ public class FairAIChatEngine
         {
             generatedText = "You can simulate a Bitcoin miner in Python by implementing a simple Proof-of-Work (PoW) algorithm. Modern Bitcoin mining requires specialized hardware (ASICs), but a CPU-based script demonstrates the core concept of hashing a block header until it meets a specific difficulty target.\r\nHere is a functional Python script for an educational Bitcoin miner:\r\npython\r\nimport hashlib\r\nimport time\r\n\r\ndef hashlib_sha256(text):\r\n    return hashlib.sha256(text.encode('utf-8')).hexdigest()\r\n\r\ndef mine_block(block_number, transactions, previous_hash, difficulty):\r\n    # The difficulty target dictates how many leading zeros the hash must have\r\n    prefix_zeros = '0' * difficulty\r\n    nonce = 0\r\n    \r\n    print(f\"⛏️ Mining block {block_number}...\")\r\n    start_time = time.time()\r\n    \r\n    while True:\r\n        # Combine block data with the changing nonce\r\n        text = str(block_number) + transactions + previous_hash + str(nonce)\r\n        current_hash = hashlib_sha256(text)\r\n        \r\n        # Check if the hash matches the difficulty target\r\n        if current_hash.startswith(prefix_zeros):\r\n            duration = time.time() - start_time\r\n            print(f\"✅ Block successfully mined in {duration:.2f} seconds!\")\r\n            print(f\"Nonce found: {nonce}\")\r\n            print(f\"Hash: {current_hash}\\n\")\r\n            return current_hash\r\n            \r\n        nonce += 1\r\n\r\nif __name__ == \"__main__\":\r\n    # Simulated blockchain data\r\n    difficulty_level = 4  # Increase this number to make mining harder\r\n    tx_data = \"Alice->Bob->1.5BTC, Charlie->Dave->0.4BTC\"\r\n    prev_block_hash = \"000010af92b3a890471b0128912c8a30113f8bb2312b\"\r\n    \r\n    # Run the miner\r\n    mine_block(block_number=5, transactions=tx_data, previous_hash=prev_block_hash, difficulty=difficulty_level)\r\nUse code with caution.\r\nHow This Script Works\r\n• The Nonce: A counter that increments with every loop. It is the only variable that changes in the block header.\r\n• SHA-256 Hashing: The hashlib library computes a unique 64-character hexadecimal string for the block data.\r\n• Difficulty Target: The difficulty_level variable sets how many consecutive zeros the hash must start with. Raising this value exponentially increases the time it takes to find a valid hash.\r\nWould you like to expand this into a mini blockchain simulation with multiple connected blocks, or explore how to optimize this code using multiprocessing to utilize more CPU cores?\r\n";
         }
-
-        _db.ChatMessages.Add(new ChatMessage
-        {
-            Session = session,
-            Role = "user",
-            Content = normalizedPrompt,
-            CreatedAt = DateTime.UtcNow
-        });
-
-        _db.ChatMessages.Add(new ChatMessage
-        {
-            Session = session,
-            Role = "assistant",
-            Content = generatedText,
-            CreatedAt = DateTime.UtcNow
-        });
-
-        _db.AiStateRecords.Add(new AiStateRecord
-        {
-            Session = session,
-            DepthValue = processedState.DepthValue,
-            HistoryValue = processedState.HistoryValue,
-            CreatedAt = DateTime.UtcNow
-        });
-
-        _db.NodeRecords.Add(new NodeRecord
-        {
-            Session = session,
-            DepthValue = verifiedNode.DepthValue,
-            MiddleValue = verifiedNode.MiddleValue,
-            HistoryValue = verifiedNode.HistoryValue,
-            CreatedAt = DateTime.UtcNow
-        });
-
- 
-        _db.SaveChanges();
-
         return new ChatResponse
         {
             SessionId = session.Id,

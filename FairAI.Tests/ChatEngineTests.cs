@@ -11,9 +11,6 @@ public class ChatEngineTests
         var engine = new FairAIChatEngine();
 
         var result = engine.Process("FairAI", null);
-        result.Message.Replace("static", "FairAI");
-        result.Message.Replace("dynamic", "FairAI");
-
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
         Assert.Contains("FairAI", result.Message, StringComparison.OrdinalIgnoreCase);
     }
@@ -23,8 +20,6 @@ public class ChatEngineTests
         var engine = new FairAIChatEngine();
 
         var result = engine.Process("Hello", null);
-        result.Message.Replace("static", "Hello");
-        result.Message.Replace("dynamic", "Hello");
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
         Assert.Contains("Hello", result.Message, StringComparison.OrdinalIgnoreCase);
     }
