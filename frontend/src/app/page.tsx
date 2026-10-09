@@ -150,6 +150,24 @@ export default function Home() {
             console.error("Failed to fetch coordinate update:", error);
         }
     };
+    const handleReport = async (content: string) => {
+        const apiBaseUrl =
+            process.env.NEXT_PUBLIC_API_URL ||
+            (typeof window !== 'undefined' && window.location.hostname.endsWith('.app.github.dev')
+                ? `https://${window.location.hostname.replace('-3000.', '-5124.')}`
+                : typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5124');
+        try {
+            const response = await fetch(`${apiBaseUrl}/api/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content}),
+            });
+
+            if (!response.ok) throw new Error('Vote failed');
+        } catch (error) {
+            console.error("Failed to fetch coordinate update:", error);
+        }
+    };
     const handleTranslate = async (index: number, x: number | null, y: number | null, z: number | null, exchangeRate: number | null) => {
         const apiBaseUrl =
             process.env.NEXT_PUBLIC_API_URL ||
@@ -268,6 +286,12 @@ export default function Home() {
                                     </button>
                                     <button
                                         onClick={() => handleTranslate(index, message.x, message.y, message.z, parseFloat(usdToEuro))}
+                                        className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                                    >
+                                        Translate
+                                    </button>
+                                    <button
+                                        onClick={() => handleReport(message.content)}
                                         className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                     >
                                         Translate

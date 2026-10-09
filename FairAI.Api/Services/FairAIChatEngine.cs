@@ -37,6 +37,11 @@ public class FairAIChatEngine
         var coreDepth = new CoreDepth(8, _db);
         coreDepth.Vote(x, y, z, voteType);
     }
+    public void Report(string content)
+    {
+        var languagePool = new LanguagePool(_db);
+        languagePool.Delete(content);
+    }
     public ChatResponse Translate(double x, double y, double z, double exchangeRate)
     {
         var languagePool = new LanguagePool(_db);

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FairAI.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace FairAI.Api.Domain;
 
@@ -65,6 +66,15 @@ public class LanguagePool
             HistoryValue = (double)HistoryValue,
             User = user
         });
+        _context.SaveChanges();
+
+    }
+    public void Delete(string content)
+    {
+        foreach(var element in content.Split(" "))
+        {
+            _context.DataSet.Remove(_context.DataSet.FirstOrDefault(a => a.Word == element));
+        }
         _context.SaveChanges();
 
     }
