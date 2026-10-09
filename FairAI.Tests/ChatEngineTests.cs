@@ -27,12 +27,10 @@ public class ChatEngineTests
     public void Process_ShouldTranslateResponse()
     {
         var engine = new FairAIChatEngine();
-        var result = engine.Process("Hello", null);
+        var result = engine.Process("FairAI", null);
         result = engine.Translate(0.5, 0.5, 0.5, 0.8);
-        result.Message.Replace("static", "Hello");
-        result.Message.Replace("dynamic", "Hello");
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
-        Assert.Contains("Hello", result.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("FairAI", result.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     /*   [Fact]
