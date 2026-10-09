@@ -49,6 +49,22 @@ public class LanguagePool
 
     public void Add(string word, string? user, double? HistoryValue)
     {
+        if (_context.DataSet.FirstOrDefault(a => a.Word == "static") == default(DataModel))
+        {
+            _context.DataSet.Add(new DataModel { Word = "static", DepthValue = 0, HistoryValue = 0 });
+        }
+        if (_context.DataSet.FirstOrDefault(a => a.Word == "dynamic") == default(DataModel))
+        {
+            _context.DataSet.Add(new DataModel { Word = "dynamic", DepthValue = 1.0, HistoryValue = 1.0 });
+        }
+        if (word == "static")
+        {
+            return;
+        }
+        if (word == "dynamic")
+        {
+            return;
+        }
         if (string.IsNullOrWhiteSpace(word)) return;
 
         if (_context.DataSet.ToList().Any(d => d.User == user && string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
