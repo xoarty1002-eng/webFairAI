@@ -294,7 +294,7 @@ export default function Home() {
                                         onClick={() => handleReport(message.content)}
                                         className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                                     >
-                                        Translate
+                                        Report
                                     </button>
                                 </div>
                             )}
