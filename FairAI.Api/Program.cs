@@ -171,17 +171,17 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     }
     catch (Exception ex)
     {
+        var inner = ex.InnerException?.Message ?? ex.Message;
         return Results.Ok(new
         {
             sessionId = 0,
             prompt = "",
-            message = ex.Message,
+            message = $"DB Error: {inner}",
             depthValue = 0.0,
             historyValue = 0.0,
             sessionTitle = ""
         });
     }
-
 });
 app.MapFallbackToFile("index.html"); 
 app.Run();
