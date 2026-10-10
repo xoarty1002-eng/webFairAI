@@ -46,7 +46,7 @@ public class FairAIChatEngine
     {
         var languagePool = new LanguagePool(_db);
         var depthPool = new DepthPool(32, _db);
-        var verifiedNode = new NodeModel() { DepthValue = (x * exchangeRate) % 1, HistoryValue = (y * exchangeRate) % 1, MiddleValue = (z * exchangeRate) % 1, Id = 0 };
+        var verifiedNode = new NodeModel() { MeaningValue = (x * exchangeRate) % 1, LanguageValue = (y * exchangeRate) % 1, MiddleValue = (z * exchangeRate) % 1, Id = 0 };
         var processedState = depthPool.Up(verifiedNode);
 
         var generatedText = languagePool.Generate(processedState, null);
@@ -55,8 +55,8 @@ public class FairAIChatEngine
             SessionId = 0,
             Prompt = "",
             Message = generatedText,
-            DepthValue = processedState.DepthValue,
-            HistoryValue = processedState.HistoryValue,
+            DepthValue = processedState.MeaningValue,
+            HistoryValue = processedState.LanguageValue,
             X = x,
             Y = y,
             Z = z
@@ -141,17 +141,17 @@ public class FairAIChatEngine
         _db.AiStateRecords.Add(new AiStateRecord
         {
             Session = session,
-            DepthValue = processedState.DepthValue,
-            HistoryValue = processedState.HistoryValue,
+            DepthValue = processedState.MeaningValue,
+            HistoryValue = processedState.LanguageValue,
             CreatedAt = DateTime.UtcNow
         });
 
         _db.NodeRecords.Add(new NodeRecord
         {
             Session = session,
-            DepthValue = verifiedNode.DepthValue,
+            DepthValue = verifiedNode.MeaningValue,
             MiddleValue = verifiedNode.MiddleValue,
-            HistoryValue = verifiedNode.HistoryValue,
+            HistoryValue = verifiedNode.LanguageValue,
             CreatedAt = DateTime.UtcNow
         });
 
@@ -163,11 +163,11 @@ public class FairAIChatEngine
             SessionId = session.Id,
             Prompt = normalizedPrompt,
             Message = generatedText,
-            DepthValue = processedState.DepthValue,
-            HistoryValue = processedState.HistoryValue,
-            X = verifiedNode.DepthValue,
+            DepthValue = processedState.MeaningValue,
+            HistoryValue = processedState.LanguageValue,
+            X = verifiedNode.MeaningValue,
             Y = verifiedNode.MiddleValue,
-            Z = verifiedNode.HistoryValue
+            Z = verifiedNode.LanguageValue
         };
     }
 

@@ -19,7 +19,7 @@ public class ChatEngineTests
     {
         var engine = new FairAIChatEngine();
 
-        var result = engine.Process("Hello", null);
+        var result = engine.Process("Hello Hello", null);
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
         Assert.Contains("Hello", result.Message, StringComparison.OrdinalIgnoreCase);
     }

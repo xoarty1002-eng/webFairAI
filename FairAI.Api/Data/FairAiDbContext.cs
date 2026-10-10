@@ -9,7 +9,7 @@ public class FairAiDbContext : DbContext
     {
     }
 
-    public DbSet<DataModel> DataSet => Set<DataModel>();
+    public DbSet<TextModel> DataSet => Set<TextModel>();
     public DbSet<NeuronModel> NeuronSet => Set<NeuronModel>();
     public DbSet<CoreModel> CoreSet => Set<CoreModel>();
     public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
@@ -37,7 +37,7 @@ public class FairAiDbContext : DbContext
             .HasMaxLength(4000);
 
         // Dynamic clean lowercase table mapping structure
-        modelBuilder.Entity<DataModel>().ToTable("dataset");
+        modelBuilder.Entity<TextModel>().ToTable("dataset");
         modelBuilder.Entity<NeuronModel>().ToTable("neuronset");
         modelBuilder.Entity<CoreModel>().ToTable("coreset");
         modelBuilder.Entity<ChatSession>().ToTable("chatsessions");

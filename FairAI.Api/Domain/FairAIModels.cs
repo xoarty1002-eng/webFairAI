@@ -4,21 +4,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FairAI.Api.Domain;
 
-public class StateModel
+public class LanguageModel
 {
     [Key]
     public int Id { get; set; }
-    public double DepthValue { get; set; }
-    public double HistoryValue { get; set; }
+    public double MeaningValue { get; set; }
+    public double LanguageValue { get; set; }
 }
 
-public class DataModel : StateModel
+public class TextModel : LanguageModel
 {
-    public string Word { get; set; } = string.Empty;
+    public string FirstWord { get; set; }
+    public string LastWord { get; set; }
     public string? User { get; set; } = string.Empty;
 }
 
-public class NodeModel : StateModel
+public class NodeModel : LanguageModel
 {
     public double MiddleValue { get; set; }
 }
@@ -47,23 +48,27 @@ public class LanguagePool
     {
         _context = context;
     }
-
-    public void Add(string word, string? user, double? DepthValue)
+    public void Add(string firstWord, string lastWord, string? user, double? meaningValue)
     {
-        if (string.IsNullOrWhiteSpace(word)) return;
+        if (string.IsNullOrWhiteSpace(firstWord)) return;
+        if (string.IsNullOrWhiteSpace(lastWord)) return;
 
-        if (_context.DataSet.ToList().Any(d => d.User == user && string.Equals(d.Word, word, StringComparison.OrdinalIgnoreCase))) return;
+        bool exists = _context.DataSet.Any(d => d.User == user &&
+            (d.FirstWord.ToLower() == firstWord.ToLower() || d.LastWord.ToLower() == lastWord.ToLower()));
+
+        if (exists) return;
 
         var random = Random.Shared;
-        if (DepthValue == null)
+        if (meaningValue == null)
         {
-            DepthValue = random.NextDouble();
+            meaningValue = random.NextDouble();
         }
-        _context.DataSet.Add(new DataModel
+        _context.DataSet.Add(new TextModel
         {
-            Word = word,
-            DepthValue = (double)DepthValue,
-            HistoryValue = random.NextDouble(),
+            FirstWord = firstWord,
+            LastWord = lastWord,
+            MeaningValue = (double)meaningValue,
+            LanguageValue = random.NextDouble(),
             User = user
         });
         _context.SaveChanges();
@@ -71,64 +76,91 @@ public class LanguagePool
     }
     public void Delete(string content)
     {
-        foreach(var element in content.Split(" "))
+        var elements = content.Split(" ");
+        try
         {
-            _context.DataSet.Remove(_context.DataSet.FirstOrDefault(a => a.Word == element));
+            for (var i = 0; i < elements.Count() - 1; i++)
+            {
+                _context.DataSet.Remove(_context.DataSet.FirstOrDefault(a => a.FirstWord == elements[i] && a.LastWord == elements[i + 1]));
+            }
+            _context.SaveChanges();
         }
-        _context.SaveChanges();
-
+        catch (Exception e)
+        {
+        }
     }
-
-    public StateModel Calculate(string request, string? user)
+    public LanguageModel Calculate(string request, string? user)
     {
-        var result = new StateModel();
+        var result = new LanguageModel();
         var dataArray = request.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-        foreach (var element in dataArray)
+        for (var i = 0; i < dataArray.Count() - 1; i++)
         {
-            Add(element, user, null);
-            var match = _context.DataSet.ToList().FirstOrDefault(d => d.User == user && string.Equals(d.Word, element, StringComparison.OrdinalIgnoreCase));
+            Add(dataArray[i], dataArray[i + 1], user, null);
+            var match = _context.DataSet.ToList().FirstOrDefault(d => d.User == user && string.Equals(d.FirstWord, dataArray[i], StringComparison.OrdinalIgnoreCase) && string.Equals(d.LastWord, dataArray[i+1], StringComparison.OrdinalIgnoreCase));
             if (match is null) continue;
-            result.DepthValue = (result.DepthValue + match.DepthValue) / 2;
-            result.HistoryValue = (result.HistoryValue + match.HistoryValue) / 2;
+            result.MeaningValue = (result.MeaningValue + match.MeaningValue) / 2;
+            result.LanguageValue = (result.LanguageValue + match.LanguageValue) / 2;
         }
 
         return result;
     }
-
-    public string Generate(StateModel dm, string? user)
+    public string Generate(LanguageModel dm, string? user)
     {
         if (! _context.DataSet.ToList().Where(d => d.User == user).ToList().Any()) 
         return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
-        var dmX = dm.HistoryValue;
-        var dmY = dm.DepthValue;
+        var dmX = dm.LanguageValue;
+        var dmY = dm.MeaningValue;
         var str = "";
-        DataModel closestObject;
+        TextModel closestObject;
         var flag = false;
         var wordCount = 0;
+        var lastWord = "";
+        var firstWord = "";
         while (true)
         {
             if (flag)
             {
-                closestObject =  _context.DataSet.ToList().Where(d => d.User == user).ToList().MinBy(x =>
-                    Math.Abs(x.HistoryValue - dmX)
+                closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
+                    Math.Abs(x.LanguageValue - dmX)
             );
+                if (closestObject == null)
+                {
+                    Add("FairAI", lastWord, user, disp);
+                    return str;
+                }
+                lastWord = closestObject.LastWord;
             }
             else
             {
-                closestObject =  _context.DataSet.ToList().Where(d => d.User == user).ToList().MinBy(x =>
-                Math.Abs(x.DepthValue - dmY)
+                closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
+                Math.Abs(x.MeaningValue - dmY)
             );
+                if (closestObject == null)
+                {
+                    Add("FairAI", lastWord, user, disp);
+                    return str;
+                }
+                lastWord = closestObject.LastWord;
             }
-            dmX = (closestObject.DepthValue + dmX) / 2;
-            dmY = (closestObject.DepthValue + dmY) / 2;
+            dmX = (closestObject.MeaningValue + dmX) / 2;
+            dmY = (closestObject.MeaningValue + dmY) / 2;
             flag = !flag;
-            var pre = (Math.Abs(dmX - dm.DepthValue) + Math.Abs(dmY - dm.HistoryValue));
+            var pre = (Math.Abs(dmX - dm.MeaningValue) + Math.Abs(dmY - dm.LanguageValue));
             if (pre < disp)
             {
                 disp = pre;
-                str += closestObject.Word + " ";
+                if (firstWord != lastWord)
+                {
+                    firstWord = closestObject.FirstWord;
+                    str += firstWord + " ";
+                }
+                else
+                {
+                    Add("FairAI", lastWord, user, disp);
+                    return str;
+                }
                 wordCount++;
             }
             else
@@ -142,11 +174,11 @@ public class LanguagePool
                     wordCount--;
                     _context.DataSet.Remove(closestObject);
                     _context.SaveChanges();
-                    Add(closestObject.Word, user, closestObject.HistoryValue);
+                    Add(closestObject.FirstWord, closestObject.LastWord, user, closestObject.LanguageValue);
                 }
             }
         }
-        Add("FairAI", user, disp);
+        Add("FairAI", lastWord, user, disp);
         return str;
     }
 }
@@ -168,44 +200,44 @@ public class DepthPool
        }
     }
 
-    public NodeModel Down(StateModel request)
+    public NodeModel Down(LanguageModel request)
     {
         var replacement = 1.0;
         var replacementIndex = 0;
 
-        request.DepthValue = (_context.NeuronSet.ToList()[0].Value + request.DepthValue) / 2;
-        if (request.DepthValue < replacement) { replacement = request.DepthValue; replacementIndex = 0; }
+        request.MeaningValue = (_context.NeuronSet.ToList()[0].Value + request.MeaningValue) / 2;
+        if (request.MeaningValue < replacement) { replacement = request.MeaningValue; replacementIndex = 0; }
 
-        request.HistoryValue = (_context.NeuronSet.ToList()[1].Value + request.HistoryValue) / 2;
-        if (request.HistoryValue < replacement) { replacement = request.HistoryValue; replacementIndex = 1; }
+        request.LanguageValue = (_context.NeuronSet.ToList()[1].Value + request.LanguageValue) / 2;
+        if (request.LanguageValue < replacement) { replacement = request.LanguageValue; replacementIndex = 1; }
 
         var node = new NodeModel
         {
-            DepthValue = (_context.NeuronSet.ToList()[2].Value + request.DepthValue) / 2,
-            MiddleValue = (_context.NeuronSet.ToList()[3].Value + (request.HistoryValue + request.DepthValue) / 2) / 2,
-            HistoryValue = (_context.NeuronSet.ToList()[4].Value + request.HistoryValue) / 2
+            MeaningValue = (_context.NeuronSet.ToList()[2].Value + request.MeaningValue) / 2,
+            MiddleValue = (_context.NeuronSet.ToList()[3].Value + (request.LanguageValue + request.MeaningValue) / 2) / 2,
+            LanguageValue = (_context.NeuronSet.ToList()[4].Value + request.LanguageValue) / 2
         };
 
-        if (node.DepthValue < replacement) { replacement = node.DepthValue; replacementIndex = 2; }
+        if (node.MeaningValue < replacement) { replacement = node.MeaningValue; replacementIndex = 2; }
         if (node.MiddleValue < replacement) { replacement = node.MiddleValue; replacementIndex = 3; }
-        if (node.HistoryValue < replacement) { replacement = node.HistoryValue; replacementIndex = 4; }
+        if (node.LanguageValue < replacement) { replacement = node.LanguageValue; replacementIndex = 4; }
 
         for (var i = 5; i + 2 < _context.NeuronSet.ToList().Count; i += 3)
         {
-            var priorDepth = node.DepthValue;
+            var priorDepth = node.MeaningValue;
             var priorMiddle = node.MiddleValue;
-            var priorHistory = node.HistoryValue;
+            var priorHistory = node.LanguageValue;
 
-            node.DepthValue = (_context.NeuronSet.ToList()[i].Value + node.DepthValue) / 2;
+            node.MeaningValue = (_context.NeuronSet.ToList()[i].Value + node.MeaningValue) / 2;
             node.MiddleValue = (_context.NeuronSet.ToList()[i + 1].Value + node.MiddleValue) / 2;
-            node.HistoryValue = (_context.NeuronSet.ToList()[i + 2].Value + node.HistoryValue) / 2;
-            node.DepthValue = (node.DepthValue + priorMiddle) / 2;
+            node.LanguageValue = (_context.NeuronSet.ToList()[i + 2].Value + node.LanguageValue) / 2;
+            node.MeaningValue = (node.MeaningValue + priorMiddle) / 2;
             node.MiddleValue = (node.MiddleValue + priorHistory) / 2;
-            node.HistoryValue = (node.HistoryValue + priorDepth) / 2;
+            node.LanguageValue = (node.LanguageValue + priorDepth) / 2;
 
-            if (node.DepthValue < replacement) { replacement = node.DepthValue; replacementIndex = i; }
+            if (node.MeaningValue < replacement) { replacement = node.MeaningValue; replacementIndex = i; }
             if (node.MiddleValue < replacement) { replacement = node.MiddleValue; replacementIndex = i + 1; }
-            if (node.HistoryValue < replacement) { replacement = node.HistoryValue; replacementIndex = i + 2; }
+            if (node.LanguageValue < replacement) { replacement = node.LanguageValue; replacementIndex = i + 2; }
         }
 
         var targetNeuron = _context.NeuronSet
@@ -221,24 +253,24 @@ public class DepthPool
         return node;
     }
 
-    public StateModel Up(NodeModel request)
+    public LanguageModel Up(NodeModel request)
     {
         for (var i = _context.NeuronSet.ToList().Count - 3; i > 1; i -= 3)
         {
-            var priorDepth = request.DepthValue;
+            var priorDepth = request.MeaningValue;
             var priorMiddle = request.MiddleValue;
-            var priorHistory = request.HistoryValue;
+            var priorHistory = request.LanguageValue;
 
-            request.DepthValue = (_context.NeuronSet.ToList()[i].Value + request.DepthValue) / 2;
+            request.MeaningValue = (_context.NeuronSet.ToList()[i].Value + request.MeaningValue) / 2;
             request.MiddleValue = (_context.NeuronSet.ToList()[i + 1].Value + request.MiddleValue) / 2;
-            request.HistoryValue = (_context.NeuronSet.ToList()[i + 2].Value + request.HistoryValue) / 2;
-            request.DepthValue = (request.DepthValue + priorMiddle) / 2;
+            request.LanguageValue = (_context.NeuronSet.ToList()[i + 2].Value + request.LanguageValue) / 2;
+            request.MeaningValue = (request.MeaningValue + priorMiddle) / 2;
             request.MiddleValue = (request.MiddleValue + priorHistory) / 2;
-            request.HistoryValue = (request.HistoryValue + priorDepth) / 2;
+            request.LanguageValue = (request.LanguageValue + priorDepth) / 2;
         }
 
-        request.DepthValue = (_context.NeuronSet.ToList()[0].Value + (request.DepthValue + request.MiddleValue) / 2) / 2;
-        request.HistoryValue = (_context.NeuronSet.ToList()[1].Value + (request.HistoryValue + request.MiddleValue) / 2) / 2;
+        request.MeaningValue = (_context.NeuronSet.ToList()[0].Value + (request.MeaningValue + request.MiddleValue) / 2) / 2;
+        request.LanguageValue = (_context.NeuronSet.ToList()[1].Value + (request.LanguageValue + request.MiddleValue) / 2) / 2;
         return request;
     }
 }
@@ -301,8 +333,8 @@ public class CoreDepth
         const double normalizedTolerance = 0.0028;
         var maxIterations = 200;
         var cores = _context.CoreSet.ToList();
-        var closestPoint = cores.MinBy(p => Math.Pow(p.Range - request.HistoryValue, 2) + Math.Pow(p.Speed - request.DepthValue, 2));
-        var time = (int)(closestPoint.Position / closestPoint.Speed - request.HistoryValue/closestPoint.Speed);
+        var closestPoint = cores.MinBy(p => Math.Pow(p.Range - request.LanguageValue, 2) + Math.Pow(p.Speed - request.MeaningValue, 2));
+        var time = (int)(closestPoint.Position / closestPoint.Speed - request.LanguageValue/closestPoint.Speed);
         while (true)
         {
             maxIterations--;
@@ -325,8 +357,8 @@ public class CoreDepth
 
                         if (maxIterations <= 0 || d12 <= normalizedTolerance && d23 <= normalizedTolerance && d13 <= normalizedTolerance)
                         {
-                            request.DepthValue = cores[i].Speed;
-                            request.HistoryValue = cores[j].Speed;
+                            request.MeaningValue = cores[i].Speed;
+                            request.LanguageValue = cores[j].Speed;
                             request.MiddleValue = cores[k].Speed;
                             return request;
                         }
