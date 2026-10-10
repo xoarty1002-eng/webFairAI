@@ -111,8 +111,9 @@ public class LanguagePool
     }
     public string Generate(LanguageModel dm, string? user)
     {
-//        if (!_context.DataSet.Any(d => d.User == user))
-//            return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
+        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
+        if (!userContext.Any())
+            return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;
@@ -122,12 +123,10 @@ public class LanguagePool
         var wordCount = 0;
         var lastWord = "";
         var firstWord = "";
-        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
         while (true)
         {
             if (flag)
             {
-                str += "g1 ";
                 closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
                     Math.Abs(x.LanguageValue - dmX)
             );
@@ -140,28 +139,22 @@ public class LanguagePool
             }
             else
             {
-                str += "g2 "+user+lastWord;
                 closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
                 Math.Abs(x.MeaningValue - dmY)
             );
-                str += "g2.2 "+ userContext.FirstOrDefault().FirstWord;
                 if (closestObject == null)
                 {
                     Add("FairAI", lastWord, user, disp);
-                    str += "g2.3 ";
                     return str;
                 }
                 lastWord = closestObject.LastWord;
-                str += "g2.4 ";
             }
             dmX = (closestObject.MeaningValue + dmX) / 2;
             dmY = (closestObject.MeaningValue + dmY) / 2;
             flag = !flag;
             var pre = (Math.Abs(dmX - dm.MeaningValue) + Math.Abs(dmY - dm.LanguageValue));
-            str += "g3 ";
             if (pre < disp)
             {
-                str += "g4 ";
                 disp = pre;
                 if (firstWord != lastWord)
                 {
@@ -177,7 +170,6 @@ public class LanguagePool
             }
             else
             {
-                str += "g5 ";
                 if (wordCount == 0)
                 {
                     break;
