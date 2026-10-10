@@ -3,7 +3,7 @@ using FairAI.Api.Models;
 using FairAI.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using SkiaSharp; // Free replacement engine
+using SkiaSharp; 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -99,34 +99,6 @@ app.UseStaticFiles();
 app.MapGet("/api/status", () => new { name = "FairAI API", status = "online" });
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
 
-app.MapGet("/api/chat/sessions", async (FairAiDbContext db) =>
-    Results.Ok(await db.ChatSessions
-        .OrderByDescending(s => s.CreatedAt)
-        .Select(s => new
-        {
-            s.Id,
-            s.Title,
-            s.CreatedAt,
-            MessageCount = s.Messages.Count
-        })
-        .ToListAsync()));
-
-app.MapGet("/api/chat/history", async (int sessionId, FairAiDbContext db) =>
-{
-    var messages = await db.ChatMessages
-        .Where(m => m.SessionId == sessionId)
-        .OrderBy(m => m.CreatedAt)
-        .Select(m => new ChatHistoryItem
-        {
-            SessionId = m.SessionId,
-            Role = m.Role,
-            Content = m.Content,
-            CreatedAt = m.CreatedAt
-        })
-        .ToListAsync();
-
-    return Results.Ok(messages);
-});
 
 app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
 {
@@ -185,10 +157,6 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
     try
     {
         var response = engine.Process(request.Message, request.UserName);
-        var session = await db.ChatSessions
-            .Include(s => s.Messages)
-            .FirstOrDefaultAsync(s => s.Id == response.SessionId);
-
         return Results.Ok(new
         {
             sessionId = response.SessionId,
@@ -196,7 +164,6 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
             message = lib.ProcessMessageAndCombineImages(response.Message),
             depthValue = response.DepthValue,
             historyValue = response.HistoryValue,
-            sessionTitle = session?.Title,
             x = response.X,
             y = response.Y,
             z = response.Z
