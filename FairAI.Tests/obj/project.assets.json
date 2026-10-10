@@ -67,14 +67,10 @@
           "Microsoft.Extensions.Logging": "9.0.0"
         },
         "compile": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Microsoft.EntityFrameworkCore.InMemory.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Microsoft.EntityFrameworkCore.InMemory.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore.Relational/9.0.0": {
@@ -539,14 +535,10 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         },
         "compile": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/MySqlConnector.dll": {}
         },
         "runtime": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/MySqlConnector.dll": {}
         }
       },
       "Newtonsoft.Json/13.0.3": {

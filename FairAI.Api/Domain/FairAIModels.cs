@@ -111,8 +111,8 @@ public class LanguagePool
     }
     public string Generate(LanguageModel dm, string? user)
     {
-        if (! _context.DataSet.ToList().Where(d => d.User == user).ToList().Any()) 
-        return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
+//        if (!_context.DataSet.Any(d => d.User == user))
+//            return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;

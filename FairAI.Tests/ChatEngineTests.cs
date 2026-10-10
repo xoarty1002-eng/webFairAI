@@ -27,7 +27,7 @@ public class ChatEngineTests
     public void Process_ShouldTranslateResponse()
     {
         var engine = new FairAIChatEngine();
-        var result = engine.Process("FairAI", null);
+        var result = engine.Process("FairAI FairAI", null);
         result = engine.Translate(0.5, 0.5, 0.5, 0.8);
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
         Assert.Contains("FairAI", result.Message, StringComparison.OrdinalIgnoreCase);
