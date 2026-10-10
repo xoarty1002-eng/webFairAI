@@ -139,16 +139,19 @@ public class LanguagePool
             }
             else
             {
-                str += "g2 ";
+                str += "g2 "+user+lastWord;
                 closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
                 Math.Abs(x.MeaningValue - dmY)
             );
+                str += "g2.2 ";
                 if (closestObject == null)
                 {
                     Add("FairAI", lastWord, user, disp);
+                    str += "g2.3 ";
                     return str;
                 }
                 lastWord = closestObject.LastWord;
+                str += "g2.4 ";
             }
             dmX = (closestObject.MeaningValue + dmX) / 2;
             dmY = (closestObject.MeaningValue + dmY) / 2;
