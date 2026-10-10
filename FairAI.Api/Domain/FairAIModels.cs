@@ -54,7 +54,7 @@ public class LanguagePool
         if (string.IsNullOrWhiteSpace(lastWord)) return;
 
         bool exists = _context.DataSet.Any(d => d.User == user &&
-            (d.FirstWord.ToLower() == firstWord.ToLower() || d.LastWord.ToLower() == lastWord.ToLower()));
+            d.FirstWord.ToLower() == firstWord.ToLower() && d.LastWord.ToLower() == lastWord.ToLower());
 
         if (exists) return;
 
