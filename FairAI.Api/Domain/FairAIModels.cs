@@ -126,6 +126,7 @@ public class LanguagePool
         {
             if (flag)
             {
+                str += "g1 ";
                 closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
                     Math.Abs(x.LanguageValue - dmX)
             );
@@ -138,6 +139,7 @@ public class LanguagePool
             }
             else
             {
+                str += "g2 ";
                 closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
                 Math.Abs(x.MeaningValue - dmY)
             );
@@ -152,8 +154,10 @@ public class LanguagePool
             dmY = (closestObject.MeaningValue + dmY) / 2;
             flag = !flag;
             var pre = (Math.Abs(dmX - dm.MeaningValue) + Math.Abs(dmY - dm.LanguageValue));
+            str += "g3 ";
             if (pre < disp)
             {
+                str += "g4 ";
                 disp = pre;
                 if (firstWord != lastWord)
                 {
@@ -169,6 +173,7 @@ public class LanguagePool
             }
             else
             {
+                str += "g5 ";
                 if (wordCount == 0)
                 {
                     break;

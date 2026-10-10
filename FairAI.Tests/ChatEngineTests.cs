@@ -10,7 +10,7 @@ public class ChatEngineTests
     {
         var engine = new FairAIChatEngine();
 
-        var result = engine.Process("FairAI", null);
+        var result = engine.Process("FairAI FairAI", null);
         Assert.False(string.IsNullOrWhiteSpace(result.Message));
         Assert.Contains("FairAI", result.Message, StringComparison.OrdinalIgnoreCase);
     }
