@@ -46,7 +46,7 @@ public class FairAIChatEngine
     {
         var languagePool = new LanguagePool(_db);
         var depthPool = new DepthPool(32, _db);
-        var verifiedNode = new NodeModel() { MeaningValue = (x * exchangeRate) % 1, LanguageValue = (y * exchangeRate) % 1, MiddleValue = (z * exchangeRate) % 1, Id = 0 };
+        var verifiedNode = new NodeModel() { MeaningValue = (x * exchangeRate) % 1, LanguageValue = (y * exchangeRate) % 1, MiddleValue = (z * exchangeRate) % 1};
         var processedState = depthPool.Up(verifiedNode);
 
         var generatedText = languagePool.Generate(processedState, null);
