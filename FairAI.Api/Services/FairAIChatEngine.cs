@@ -53,7 +53,7 @@ public class FairAIChatEngine
         return new ChatResponse
         {
             Id = 0,
-            Prompt = "",
+            Prompt = "promt",
             Message = generatedText,
             DepthValue = processedState.MeaningValue,
             HistoryValue = processedState.LanguageValue,
