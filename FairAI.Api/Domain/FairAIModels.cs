@@ -122,12 +122,13 @@ public class LanguagePool
         var wordCount = 0;
         var lastWord = "";
         var firstWord = "";
+        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
         while (true)
         {
             if (flag)
             {
                 str += "g1 ";
-                closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
+                closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
                     Math.Abs(x.LanguageValue - dmX)
             );
                 if (closestObject == null)
@@ -140,10 +141,10 @@ public class LanguagePool
             else
             {
                 str += "g2 "+user+lastWord;
-                closestObject =  _context.DataSet.ToList().Where(d => d.User == user && (string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord)).ToList().MinBy(x =>
+                closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
                 Math.Abs(x.MeaningValue - dmY)
             );
-                str += "g2.2 ";
+                str += "g2.2 "+ userContext.FirstOrDefault().FirstWord;
                 if (closestObject == null)
                 {
                     Add("FairAI", lastWord, user, disp);
