@@ -1,13 +1,12 @@
-using System.ComponentModel.DataAnnotations;
 using FairAI.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FairAI.Api.Domain;
 
 public class LanguageModel
 {
-    [Key]
-    public int Id { get; set; }
     public double MeaningValue { get; set; }
     public double LanguageValue { get; set; }
 }
@@ -15,6 +14,7 @@ public class LanguageModel
 public class TextModel : LanguageModel
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string FirstWord { get; set; }
     public string LastWord { get; set; }
@@ -29,6 +29,7 @@ public class NodeModel : LanguageModel
 public class NeuronModel
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public double Value { get; set; }
 }
@@ -36,6 +37,7 @@ public class NeuronModel
 public class CoreModel
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public double Range { get; set; }
     public double Speed { get; set; }

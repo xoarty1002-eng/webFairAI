@@ -15,10 +15,22 @@ public class FairAiDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Dynamic clean lowercase table mapping structure
         modelBuilder.Entity<TextModel>().ToTable("dataset");
         modelBuilder.Entity<NeuronModel>().ToTable("neuronset");
         modelBuilder.Entity<CoreModel>().ToTable("coreset");
+
+        modelBuilder.Entity<TextModel>()
+            .Property(e => e.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<NeuronModel>()
+            .Property(e => e.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<CoreModel>()
+            .Property(e => e.Id)
+            .ValueGeneratedOnAdd();
+
         base.OnModelCreating(modelBuilder);
     }
 }
