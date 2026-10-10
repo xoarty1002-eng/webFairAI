@@ -14,6 +14,8 @@ public class LanguageModel
 
 public class TextModel : LanguageModel
 {
+    [Key]
+    public int Id { get; set; }
     public string FirstWord { get; set; }
     public string LastWord { get; set; }
     public string? User { get; set; } = string.Empty;

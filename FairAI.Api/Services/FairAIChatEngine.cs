@@ -52,7 +52,7 @@ public class FairAIChatEngine
         var generatedText = languagePool.Generate(processedState, null);
         return new ChatResponse
         {
-            SessionId = 0,
+            Id = 0,
             Prompt = "",
             Message = generatedText,
             DepthValue = processedState.MeaningValue,

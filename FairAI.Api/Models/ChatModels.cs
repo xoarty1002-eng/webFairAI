@@ -1,12 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace FairAI.Api.Models;
 
 public class ChatRequest
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tells EF Core that MySQL handles auto-increment
+    public int Id { get; set; }
     public string Message { get; set; } = string.Empty;
     public string? UserName { get; set; }
 }
 public class VoteRequest
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tells EF Core that MySQL handles auto-increment
+    public int Id { get; set; }
     public double X { get; set; }
     public double Y { get; set; }
     public double Z { get; set; }
@@ -14,6 +23,9 @@ public class VoteRequest
 }
 public class TranslateRequest
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tells EF Core that MySQL handles auto-increment
+    public int Id { get; set; }
     public double X { get; set; }
     public double Y { get; set; }
     public double Z { get; set; }
@@ -21,7 +33,9 @@ public class TranslateRequest
 }
 public class ChatResponse
 {
-    public int SessionId { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tells EF Core that MySQL handles auto-increment
+    public int Id { get; set; }
     public string Prompt { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
     public double DepthValue { get; set; }
@@ -33,7 +47,9 @@ public class ChatResponse
 
 public class ChatHistoryItem
 {
-    public int SessionId { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Tells EF Core that MySQL handles auto-increment
+    public int Id { get; set; }
     public string Role { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }

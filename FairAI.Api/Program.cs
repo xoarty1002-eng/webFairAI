@@ -131,7 +131,7 @@ app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine 
         var response = engine.Translate(request.X, request.Y, request.Z, request.ExchangeRate);
         return Results.Ok(new
         {
-            sessionId = response.SessionId,
+            sessionId = response.Id,
             prompt = response.Prompt,
             message = lib.ProcessMessageAndCombineImages(response.Message),
             depthValue = response.DepthValue,
@@ -159,7 +159,7 @@ app.MapPost("/api/chat", async (ChatRequest request, FairAIChatEngine engine, Fa
         var response = engine.Process(request.Message, request.UserName);
         return Results.Ok(new
         {
-            sessionId = response.SessionId,
+            sessionId = response.Id,
             prompt = response.Prompt,
             message = lib.ProcessMessageAndCombineImages(response.Message),
             depthValue = response.DepthValue,
