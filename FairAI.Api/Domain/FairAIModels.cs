@@ -113,7 +113,7 @@ public class LanguagePool
     {
         var userContext = _context.DataSet.ToList().Where(d => d.User == user);
         if (!userContext.Any())
-            return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
+            return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust. "+user;
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;
@@ -184,7 +184,7 @@ public class LanguagePool
             }
         }
         Add("FairAI", lastWord, user, disp);
-        return str;
+        return str+" "+user;
     }
 }
 
