@@ -111,7 +111,7 @@ public class LanguagePool
     }
     public string Generate(LanguageModel dm, string? user)
     {
-        var userContext = _context.DataSet.ToList().Where(d => d.User == user||d.User == "");
+        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
         if (!userContext.Any())
             userContext = _context.DataSet.ToList();
         if (!userContext.Any())
@@ -119,7 +119,7 @@ public class LanguagePool
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;
-        var str = "[debug:"+dm.LanguageValue+" "+dm.MeaningValue+ " "+userContext.Count()+"] ";
+        var str = "";
         TextModel closestObject;
         var flag = false;
         var wordCount = 0;

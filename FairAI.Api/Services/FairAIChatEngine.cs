@@ -61,7 +61,7 @@ public class FairAIChatEngine : IDisposable
         };
 
         var processedState = depthPool.Up(verifiedNode);
-        var generatedText = languagePool.Generate(processedState, null);
+        var generatedText = languagePool.Generate(processedState, "");
 
         // Generate a valid pseudo-session ID or fallback instead of a hardcoded breakable 0
         int fallbackSessionId = Math.Abs((generatedText ?? "").GetHashCode() % 100000);
