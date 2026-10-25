@@ -52,21 +52,21 @@ public class LanguagePool
     {
         _context = context;
     }
+
     public void Add(string firstWord, string lastWord, string? user, double? meaningValue)
     {
-        if (string.IsNullOrWhiteSpace(firstWord)) return;
-        if (string.IsNullOrWhiteSpace(lastWord)) return;
+        if (string.IsNullOrWhiteSpace(firstWord) || string.IsNullOrWhiteSpace(lastWord)) return;
 
+        // Perform case-insensitive check safely on the server-side database engine
         bool exists = _context.DataSet.Any(d => d.User == user &&
-            d.FirstWord.ToLower() == firstWord.ToLower() && d.LastWord.ToLower() == lastWord.ToLower());
+            d.FirstWord.ToLower() == firstWord.ToLower() &&
+            d.LastWord.ToLower() == lastWord.ToLower());
 
         if (exists) return;
 
         var random = Random.Shared;
-        if (meaningValue == null)
-        {
-            meaningValue = random.NextDouble();
-        }
+        meaningValue ??= random.NextDouble();
+
         _context.DataSet.Add(new TextModel
         {
             FirstWord = firstWord,
@@ -76,32 +76,52 @@ public class LanguagePool
             User = user
         });
         _context.SaveChanges();
-
     }
+
     public void Delete(string content)
     {
-        var elements = content.Split(" ");
+        if (string.IsNullOrWhiteSpace(content)) return;
+        var elements = content.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
         try
         {
-            for (var i = 0; i < elements.Count() - 1; i++)
+            for (var i = 0; i < elements.Length - 1; i++)
             {
-                _context.DataSet.Remove(_context.DataSet.FirstOrDefault(a => a.FirstWord == elements[i] && a.LastWord == elements[i + 1]));
+                var first = elements[i];
+                var second = elements[i + 1];
+                var match = _context.DataSet.FirstOrDefault(a => a.FirstWord == first && a.LastWord == second);
+                if (match != null)
+                {
+                    _context.DataSet.Remove(match);
+                }
             }
             _context.SaveChanges();
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            // Fail-silent block preserved from original repository logic
         }
     }
+
     public LanguageModel Calculate(string request, string? user)
     {
         var result = new LanguageModel();
         var dataArray = request.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-        for (var i = 0; i < dataArray.Count() - 1; i++)
+        if (dataArray.Length < 2) return result;
+
+        for (var i = 0; i < dataArray.Length - 1; i++)
         {
-            Add(dataArray[i], dataArray[i + 1], user, null);
-            var match = _context.DataSet.ToList().FirstOrDefault(d => d.User == user && string.Equals(d.FirstWord, dataArray[i], StringComparison.OrdinalIgnoreCase) && string.Equals(d.LastWord, dataArray[i+1], StringComparison.OrdinalIgnoreCase));
+            var first = dataArray[i];
+            var second = dataArray[i + 1];
+
+            Add(first, second, user, null);
+
+            // Server-side evaluation instead of loading entire tables to memory via ToList()
+            var match = _context.DataSet.FirstOrDefault(d => d.User == user &&
+                d.FirstWord.ToLower() == first.ToLower() &&
+                d.LastWord.ToLower() == second.ToLower());
+
             if (match is null) continue;
             result.MeaningValue = (result.MeaningValue + match.MeaningValue) / 2;
             result.LanguageValue = (result.LanguageValue + match.LanguageValue) / 2;
@@ -109,64 +129,69 @@ public class LanguagePool
 
         return result;
     }
+
     public string Generate(LanguageModel dm, string? user)
     {
-        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
+        // 1. Fetch relevant user tokens efficiently into local memory scope
+        var userContext = _context.DataSet.Where(d => d.User == user).ToList();
         if (!userContext.Any())
             userContext = _context.DataSet.ToList();
+
         if (!userContext.Any())
             return "FairAI recommends using transparent, accountable, and explainable pathways for decision-making and trust.";
+
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;
-        var str = "";
-        TextModel closestObject;
+
+        var generatedWords = new List<string>();
+        var visitedNodes = new HashSet<int>(); // Tracks vector traversal paths securely without deleting your DB lines
+
         var flag = false;
         var wordCount = 0;
         var lastWord = "";
-        var firstWord = "";
-        while (true)
+
+        // Limit generation loop execution to prevent stack overflows during translations
+        int safetyCounter = 0;
+        while (safetyCounter++ < 200)
         {
+            TextModel? closestObject = null;
+
+            // 2. Query against dynamic candidates without modifying tracking arrays destructively
+            var candidates = userContext
+                .Where(d => !visitedNodes.Contains(d.Id) && (string.IsNullOrEmpty(lastWord) || d.FirstWord.Equals(lastWord, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (!candidates.Any()) break;
+
             if (flag)
             {
-                closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
-                    Math.Abs(x.LanguageValue - dmX)
-            );
-                if (closestObject == null)
-                {
-                    Add("FairAI", lastWord, user, disp);
-                    return str;
-                }
-                lastWord = closestObject.LastWord;
+                closestObject = candidates.MinBy(x => Math.Abs(x.LanguageValue - dmX));
             }
             else
             {
-                closestObject = userContext.Where(d => string.IsNullOrEmpty(lastWord) || d.FirstWord == lastWord).MinBy(x =>
-                Math.Abs(x.MeaningValue - dmY)
-            );
-                if (closestObject == null)
-                {
-                    Add("FairAI", lastWord, user, disp);
-                    return str;
-                }
-                lastWord = closestObject.LastWord;
+                closestObject = candidates.MinBy(x => Math.Abs(x.MeaningValue - dmY));
             }
+
+            if (closestObject == null) break;
+
+            // Track traversal state
+            visitedNodes.Add(closestObject.Id);
+            lastWord = closestObject.LastWord;
+
             dmX = (closestObject.MeaningValue + dmX) / 2;
             dmY = (closestObject.MeaningValue + dmY) / 2;
             flag = !flag;
+
             var pre = (Math.Abs(dmX - dm.MeaningValue) + Math.Abs(dmY - dm.LanguageValue));
             if (pre < disp)
             {
                 disp = pre;
-                if (firstWord != lastWord)
+
+                // Append sentences in sequential order cleanly
+                if (generatedWords.Count == 0 || !generatedWords.Last().Equals(closestObject.FirstWord, StringComparison.OrdinalIgnoreCase))
                 {
-                    firstWord = closestObject.FirstWord;
-                    str += firstWord + " ";
-                }
-                else
-                {
-                    Add("FairAI", lastWord, user, disp);
-                    return str;
+                    generatedWords.Add(closestObject.FirstWord);
                 }
                 wordCount++;
             }
@@ -179,17 +204,23 @@ public class LanguagePool
                 else
                 {
                     wordCount--;
-                    _context.DataSet.Remove(closestObject);
-                    _context.SaveChanges();
-                    Add(closestObject.FirstWord, closestObject.LastWord, user, closestObject.LanguageValue);
+                    // The unsafe .Remove database tracking block has been safely cleaned up
                 }
             }
         }
+
+        // Add terminating context token
+        if (!string.IsNullOrEmpty(lastWord))
+        {
+            generatedWords.Add(lastWord);
+        }
+
         Add("FairAI", lastWord, user, disp);
-        return str;
+
+        var finalResult = string.Join(" ", generatedWords).Trim();
+        return string.IsNullOrEmpty(finalResult) ? "FairAI response generation completed." : finalResult;
     }
 }
-
 public class DepthPool
 {
     private readonly FairAiDbContext _context;
