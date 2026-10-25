@@ -111,7 +111,7 @@ public class LanguagePool
     }
     public string Generate(LanguageModel dm, string? user)
     {
-        var userContext = _context.DataSet.ToList().Where(d => d.User == user);
+        var userContext = _context.DataSet.ToList().Where(d => d.User == user||d.User == "");
         if (!userContext.Any())
             userContext = _context.DataSet.ToList();
         if (!userContext.Any())
