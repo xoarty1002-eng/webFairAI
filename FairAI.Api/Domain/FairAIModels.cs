@@ -119,7 +119,7 @@ public class LanguagePool
         var disp = 2.0;
         var dmX = dm.LanguageValue;
         var dmY = dm.MeaningValue;
-        var str = "";
+        var str = "[debug:"+dm.LanguageValue+" "+dm.MeaningValue+ " "+userContext.Count()+"] ";
         TextModel closestObject;
         var flag = false;
         var wordCount = 0;
