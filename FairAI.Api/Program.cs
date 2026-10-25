@@ -100,7 +100,7 @@ app.MapGet("/api/status", () => new { name = "FairAI API", status = "online" });
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok", timestamp = DateTime.UtcNow }));
 
 
-app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
+app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
 {
     try
     {
@@ -112,7 +112,7 @@ app.MapPost("/api/vote", async (VoteRequest request, FairAIChatEngine engine) =>
         return Results.BadRequest(new { message = ex.Message });
     }
 }); 
-app.MapPost("/api/report", async (string content, FairAIChatEngine engine) =>
+app.MapPost("/api/report", async (string content, FairAIChatEngine engine, FairAiDbContext db) =>
 {
     try
     {
@@ -124,7 +124,7 @@ app.MapPost("/api/report", async (string content, FairAIChatEngine engine) =>
         return Results.BadRequest(new { message = ex.Message });
     }
 });
-app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine engine) =>
+app.MapPost("/api/translate", async (TranslateRequest request, FairAIChatEngine engine, FairAiDbContext db) =>
 {
     try
     {
